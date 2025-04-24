@@ -1,0 +1,15 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<link rel="stylesheet" href="{% static 'orders/orders.css' %}" />
+
+<section class="success-message">
+  <div class="container">
+    <div class="success-icon mb-3"><i class="bx bx-check-circle"></i></div>
+    <h2 class="mb-3">Thank you for your order!</h2>
+    <p>
+      Your purchase was successful. We’ll begin processing your order shortly.
+    </p>
+    <a href="{% url 'home' %}" class="btn-home mt-4">Return to Home</a>
+    <a href="{% url 'order_history' %}" class="btn-orders mt-4">My Orders</a>
+  </div>
+</section>
+{% endblock content %}

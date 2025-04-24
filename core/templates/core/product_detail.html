@@ -1,0 +1,82 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<link rel="stylesheet" href="{% static 'core/core.css' %}" />
+<section class="py-5">
+  <div class="container">
+    <div class="row g-5">
+      <!-- Product Images -->
+      <div class="col-md-6">
+        <img
+          id="mainImage"
+          src="{{ product.main_image.url }}"
+          alt="{{ product.name }}"
+          class="product-image mb-3"
+        />
+
+        <div class="d-flex gap-2">
+          {% if product.image_1 %}
+          <img
+            src="{{ product.image_1.url }}"
+            alt="Image 1"
+            class="img-thumbnail gallery-thumb"
+            onclick="changeImage(this.src)"
+          />
+          {% endif %} {% if product.image_2 %}
+          <img
+            src="{{ product.image_2.url }}"
+            alt="Image 2"
+            class="img-thumbnail gallery-thumb"
+            onclick="changeImage(this.src)"
+          />
+          {% endif %} {% if product.image_3 %}
+          <img
+            src="{{ product.image_3.url }}"
+            alt="Image 3"
+            class="img-thumbnail gallery-thumb"
+            onclick="changeImage(this.src)"
+          />
+          {% endif %} {% if product.image_4 %}
+          <img
+            src="{{ product.image_4.url }}"
+            alt="Image 4"
+            class="img-thumbnail gallery-thumb"
+            onclick="changeImage(this.src)"
+          />
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Product Details -->
+      <div class="col-md-6">
+        <h2>{{ product.name }}</h2>
+        <p class="price">Ksh {{ product.price }}</p>
+        <p>{{ product.description }}</p>
+        <ul class="list-group list-group-flush mb-3">
+          {% if product.spec_1 %}
+          <li class="list-group-item">{{ product.spec_1 }}</li>
+          {% endif %} {% if product.spec_2 %}
+          <li class="list-group-item">{{ product.spec_2 }}</li>
+          {% endif %} {% if product.spec_3 %}
+          <li class="list-group-item">{{ product.spec_3 }}</li>
+          {% endif %} {% if product.spec_4 %}
+          <li class="list-group-item">{{ product.spec_4 }}</li>
+          {% endif %}
+        </ul>
+
+        <!-- Add to Cart Form -->
+        <form method="post" action="{% url 'add_to_cart' product.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-cart btn-sm px-3 py-2">
+            <i class="bx bx-cart-add me-2"></i> Add to Cart
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  function changeImage(src) {
+    document.getElementById("mainImage").src = src;
+  }
+</script>
+{% endblock content %}

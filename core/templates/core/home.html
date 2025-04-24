@@ -1,0 +1,98 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<link rel="stylesheet" href="{% static 'core/core.css' %}" />
+
+<!-- Categories Bar -->
+<div class="categories-bar text-center mb-4">
+  <div class="container">
+    <a
+      href="?category=all"
+      class="category-link {% if selected_category == 'all' %}active{% endif %}"
+    >
+      All
+    </a>
+    {% for category, category_name in categories.items %}
+    <a
+      href="?category={{ category }}"
+      class="category-link {% if category == selected_category %}active{% endif %}"
+    >
+      {{ category_name }}
+    </a>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="container">
+    <h1>Power Up Your Life</h1>
+    <p>Top deals on electronics, gadgets, and accessories.</p>
+    <a
+      href="{% url 'products' %}"
+      class="btn btn-shop mt-3 px-4 py-2 text-white"
+      >Shop Now</a
+    >
+  </div>
+</section>
+
+<!-- Featured Products -->
+<section class="featured-products py-5">
+  <div class="container">
+    <h2 class="text-center mb-4" style="color: var(--purple)">
+      Featured Products
+    </h2>
+    <div class="row g-4 justify-content-center">
+      {% for product in featured_products %}
+      <div>
+        <a
+          href="{% url 'product_detail' product.pk %}"
+          class="text-decoration-none text-dark"
+        >
+          <div class="card text-center">
+            <img
+              src="{{ product.main_image.url }}"
+              class="card-img-top"
+              alt="{{ product.name }}"
+            />
+            <div class="card-body">
+              <h5 class="card-title">{{ product.name }}</h5>
+              <p class="card-text">Ksh {{ product.price }}</p>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- New Arrivals (Swipeable) -->
+<section class="new-arrivals py-5">
+  <div class="container">
+    <h2 class="text-center mb-4" style="color: var(--purple)">New Arrivals</h2>
+    <div class="product-scroll-wrapper">
+      <div class="row flex-nowrap g-4 scroll-container">
+        {% for product in new_arrivals %}
+        <div class="scroll-item">
+          <a
+            href="{% url 'product_detail' product.pk %}"
+            class="text-decoration-none text-dark"
+          >
+            <div class="card text-center">
+              <img
+                src="{{ product.main_image.url }}"
+                class="card-img-top"
+                alt="{{ product.name }}"
+              />
+              <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">Ksh {{ product.price }}</p>
+              </div>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
