@@ -1,0 +1,43 @@
+:root {
+  --purple: #f72798;
+  --black: #000000;
+  --green: #1a5d1a;
+  --gold: #f57d1f;
+}
+
+.cart-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.btn-remove {
+  background-color: transparent;
+  color: var(--purple);
+  border: none;
+}
+
+.btn-remove:hover {
+  color: var(--black);
+}
+
+.btn-checkout {
+  background-color: var(--black);
+  color: white;
+  border: none;
+}
+
+.btn-checkout:hover {
+  background-color: var(--purple);
+}
+
+.btn-update {
+  background-color: var(--green);
+  color: white;
+  border: none;
+}
+
+.btn-update:hover {
+  background-color: var(--black);
+}

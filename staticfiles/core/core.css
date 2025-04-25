@@ -1,0 +1,263 @@
+:root {
+  --purple: #f72798;
+  --black: #000000;
+  --green: #1a5d1a;
+  --gold: #f57d1f;
+}
+
+.categories-bar {
+  background-color: var(--black);
+  padding: 10px 0;
+}
+
+.categories-bar a {
+  color: white;
+  margin: 0 15px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.categories-bar a.active {
+  font-weight: bold;
+  color: var(--purple);
+}
+
+.hero {
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url("/static/core/images/men-watch.webp") center/cover;
+  color: #fff;
+  padding: 100px 20px;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  color: var(--gold);
+}
+
+.hero p {
+  font-size: 1.2rem;
+}
+
+.btn-shop {
+  background-color: var(--black);
+  border: none;
+}
+
+.btn-shop:hover {
+  background-color: var(--purple);
+}
+
+.featured-products .card,
+.new-arrivals .card {
+  border: none;
+  transition: 0.3s ease-in-out;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.featured-products .card:hover,
+.new-arrivals .card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.featured-products .card-img-top,
+.new-arrivals .card-img-top {
+  height: 200px;
+  object-fit: cover;
+}
+
+.featured-products .card-body,
+.new-arrivals .card-body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Featured Products Grid */
+.featured-products .row > div {
+  flex: 0 0 16.6667%;
+  max-width: 16.6667%;
+}
+
+@media (max-width: 1200px) {
+  .featured-products .row > div {
+    flex: 0 0 20%;
+    max-width: 20%;
+  }
+}
+
+@media (max-width: 992px) {
+  .featured-products .row > div {
+    flex: 0 0 33.3333%;
+    max-width: 33.3333%;
+  }
+}
+
+@media (max-width: 768px) {
+  .featured-products .row > div {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (max-width: 576px) {
+  /* ✅ Two columns on extra-small screens */
+  .featured-products .row > div {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+/* Swipeable New Arrivals */
+.product-scroll-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroll-container {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: nowrap;
+}
+
+.scroll-item {
+  flex: 0 0 auto;
+  width: 45%;
+  max-width: 45%;
+}
+
+@media (min-width: 576px) {
+  .scroll-item {
+    width: 30%;
+    max-width: 30%;
+  }
+}
+
+@media (min-width: 768px) {
+  .scroll-item {
+    width: 20%;
+    max-width: 20%;
+  }
+}
+
+/* products.html styling Start Here */
+
+.product-card {
+  transition: 0.3s;
+  border: none;
+  height: 100%;
+}
+
+.product-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.product-img {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  object-fit: cover;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.btn-cart {
+  background-color: var(--black);
+  color: white;
+  border: none;
+}
+
+.btn-cart:hover {
+  background-color: var(--purple);
+}
+
+.page-item.active .page-link {
+  background-color: var(--purple);
+  color: white;
+  border-color: var(--purple);
+}
+
+.page-link:hover {
+  background-color: var(--gold);
+  color: white;
+}
+
+@media (max-width: 576px) {
+  .btn-responsive {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Product_detail.html styling Start here */
+.product-image {
+  max-height: 450px;
+  object-fit: cover;
+  border-radius: 10px;
+  width: 100%;
+}
+
+.gallery-thumb {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border 0.3s ease;
+  border-radius: 8px;
+}
+
+.gallery-thumb:hover {
+  border: 2px solid var(--purple);
+}
+
+.price {
+  color: var(--green);
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.cart-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #ff5733;
+  color: white;
+  border-radius: 50%;
+  padding: 5px 10px;
+  font-size: 1rem;
+}
+
+/* Search_results html styling start here */
+.card-img-top {
+  height: 220px;
+  object-fit: cover;
+  border-bottom: 1px solid #eee;
+}
+
+.card {
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.btn-view {
+  background-color: #000;
+  color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.btn-view:hover {
+  background-color: #f72798;
+  color: #fff;
+}
