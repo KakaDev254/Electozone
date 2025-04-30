@@ -2,8 +2,23 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from .forms import ProfileForm
 
 User = get_user_model()
+
+@login_required
+def profile_view(request):
+    """View for displaying and editing the user profile."""
+    if request.method == "POST":
+        form = ProfileForm(request.POST, instance=request.user)  # Prefill the form with current user data
+        if form.is_valid():
+            form.save()  # Save the updated user profile
+            return redirect('profile')  # Redirect to the same page or to a success page
+    else:
+        form = ProfileForm(instance=request.user)  # Prefill the form with current user data
+
+    return render(request, 'accounts/profile.html', {'form': form})
 
 def login_view(request):
     if request.method == 'POST':

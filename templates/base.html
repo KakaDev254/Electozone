@@ -43,8 +43,9 @@
           </div>
         </form>
 
-        <!-- Desktop Cart -->
+        <!-- Desktop Cart and User -->
         <div class="d-none d-lg-flex align-items-center">
+          <!-- Cart Icon -->
           <a
             href="{% url 'view_cart' %}"
             class="position-relative text-white me-3"
@@ -57,6 +58,17 @@
               {{ cart_count }}
             </span>
           </a>
+
+          <!-- User Icon -->
+          {% if user.is_authenticated %}
+          <a
+            href="{% url 'profile' %}"
+            class="text-white me-3"
+            aria-label="Profile"
+          >
+            <i class="bx bx-user-circle fs-4"></i>
+          </a>
+          {% endif %}
         </div>
 
         <!-- Mobile: Search + Cart + Hamburger -->

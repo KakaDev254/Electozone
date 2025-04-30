@@ -1,0 +1,14 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container mt-5 text-center">
+  <div class="alert alert-success">
+    <h4 class="alert-heading">Payment Successful!</h4>
+    <p>
+      Your payment for Order ID: <strong>{{ order.id }}</strong> has been
+      successfully processed.
+    </p>
+    <hr />
+    <p>Total Paid: <strong>Ksh {{ order.get_total }}</strong></p>
+    <a href="{% url 'home' %}" class="btn btn-primary mt-3">Return to Home</a>
+  </div>
+</div>
+{% endblock %}

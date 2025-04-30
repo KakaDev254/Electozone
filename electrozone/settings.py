@@ -13,6 +13,12 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = ['*']
 
 
+MPESA_ENVIRONMENT = config('MPESA_ENVIRONMENT')
+MPESA_CONSUMER_KEY = config('MPESA_CONSUMER_KEY')
+MPESA_CONSUMER_SECRET = config('MPESA_CONSUMER_SECRET')
+MPESA_SHORTCODE = config('MPESA_SHORTCODE')
+MPESA_PASSKEY = config('MPESA_PASSKEY')
+MPESA_CALLBACK_URL = config('MPESA_CALLBACK_URL')
 
 # Application definition
 
@@ -27,6 +33,9 @@ INSTALLED_APPS = [
     'core',
     'cart',
     'orders',
+    'mpesa',
+    'coupons',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

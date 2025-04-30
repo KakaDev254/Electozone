@@ -1,8 +1,8 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from django.contrib.sessions.models import Session
 from django.contrib import messages
-from .models import Cart, CartItem
+from .models import Cart, CartItem, DeliveryLocation
 from core.models import Product
+from coupons.models import Coupon  
 
 # Helper function to get or create a cart
 def get_cart(request):
@@ -22,7 +22,43 @@ def get_cart(request):
 def view_cart(request):
     cart = get_cart(request)
     items = cart.items.all()
-    return render(request, 'cart/cart.html', {'cart': cart, 'items': items})
+
+    # Base total before any discounts or fees
+    base_total = cart.get_total()
+
+    # Coupon discount
+    coupon_discount = 0
+    discount_message = ""
+
+    if cart.coupon and cart.coupon.is_valid():
+        if cart.coupon.discount_type == 'percentage':
+            coupon_discount = base_total * (cart.coupon.discount_value / 100)
+            discount_message = f'Coupon "{cart.coupon.code}" applied! Discount: {cart.coupon.discount_value}% off'
+        elif cart.coupon.discount_type == 'fixed':
+            coupon_discount = cart.coupon.discount_value
+            discount_message = f'Coupon "{cart.coupon.code}" applied! Discount: Ksh {coupon_discount}'
+
+    # Delivery fee (from session, stored after user selects location)
+    delivery_fee = request.session.get("delivery_fee", 0)
+    delivery_message = request.session.get("delivery_message", "")
+    delivery_locations = DeliveryLocation.objects.all()
+
+    # Final calculations
+    total_after_discount = max(base_total - coupon_discount, 0)
+    final_total = total_after_discount + delivery_fee
+
+    return render(request, 'cart/cart.html', {
+        'cart': cart,
+        'items': items,
+        'base_total': base_total,
+        'coupon_discount': coupon_discount,
+        'discount_message': discount_message,
+        'delivery_fee': delivery_fee,
+        'delivery_message': delivery_message,
+        'delivery_locations': delivery_locations,
+        'total_after_discount': total_after_discount,
+        'final_total': final_total,
+    })
 
 
 # Add to Cart View (POST-based)
@@ -80,3 +116,49 @@ def update_cart(request, item_id):
         return redirect("view_cart")
 
     return redirect("home")
+
+
+# Apply Coupon
+def apply_coupon(request):
+    cart = get_cart(request)
+    if request.method == "POST":
+        coupon_code = request.POST.get('coupon_code')
+        try:
+            coupon = Coupon.objects.get(code=coupon_code)
+
+            if not coupon.is_valid():
+                messages.error(request, "Coupon is expired or has reached its usage limit.")
+                return redirect('view_cart')
+
+            if cart.get_total() < coupon.min_purchase_amount:
+                messages.error(request, f"Coupon requires a minimum purchase of Ksh {coupon.min_purchase_amount}.")
+                return redirect('view_cart')
+
+            cart.coupon = coupon  # Assign coupon to the cart
+            cart.save()
+
+            # Calculate the applied discount based on the coupon type
+            if coupon.discount_type == 'percentage':
+                discount = cart.get_total() * (coupon.discount_value / 100)
+            elif coupon.discount_type == 'fixed':
+                discount = coupon.discount_value
+            else:
+                discount = 0
+
+            messages.success(request, f'Coupon "{coupon_code}" applied! Discount: Ksh {discount}')
+        except Coupon.DoesNotExist:
+            messages.error(request, "Invalid coupon code.")
+
+    return redirect('view_cart')
+
+def set_delivery_location(request):
+    if request.method == "POST":
+        location_id = request.POST.get("delivery_location")
+        try:
+            location = DeliveryLocation.objects.get(id=location_id)
+            request.session["delivery_fee"] = float(location.fee)
+            request.session["delivery_message"] = f"{location.name} – Ksh {location.fee}"
+        except DeliveryLocation.DoesNotExist:
+            request.session["delivery_fee"] = 0
+            request.session["delivery_message"] = "Invalid delivery location selected."
+    return redirect("view_cart")

@@ -1,0 +1,38 @@
+<!-- accounts/templates/accounts/profile.html -->
+
+{% extends 'base.html' %} {% load widget_tweaks %} {% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">User Profile</h2>
+  <form method="POST" class="form-group">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="full_name">Full Name</label>
+      {{ form.full_name|add_class:"form-control" }}
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      {{ form.email|add_class:"form-control" }}
+    </div>
+    <div class="form-group">
+      <label for="phone_number">Phone Number</label>
+      {{ form.phone_number|add_class:"form-control" }}
+    </div>
+    <div class="form-group">
+      <label for="address">Address</label>
+      {{ form.address|add_class:"form-control" }}
+    </div>
+    <div class="form-group">
+      <label for="city">City</label>
+      {{ form.city|add_class:"form-control" }}
+    </div>
+    <div class="form-group">
+      <label for="postal_code">Postal Code</label>
+      {{ form.postal_code|add_class:"form-control" }}
+    </div>
+    <button type="submit" class="btn btn-primary">Update Profile</button>
+  </form>
+  <a href="{% url 'order_history' %}" class="btn btn-primary px-4"
+    >View My Orders</a
+  >
+</div>
+{% endblock %}

@@ -1,43 +1,71 @@
-:root {
-  --purple: #f72798;
-  --black: #000000;
-  --green: #1a5d1a;
-  --gold: #f57d1f;
-}
+/* ElectroZone Cart Styles */
 
-.cart-item img {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 8px;
+.btn-update {
+  background-color: #ff9800;
+  color: white;
+  border: none;
+}
+.btn-update:hover {
+  background-color: #e68a00;
 }
 
 .btn-remove {
-  background-color: transparent;
-  color: var(--purple);
+  background-color: #b80000;
+  color: white;
   border: none;
 }
-
 .btn-remove:hover {
-  color: var(--black);
+  background-color: #820300;
+}
+
+.btn-apply {
+  background-color: #5f8670;
+  color: white;
+  border: none;
+}
+.btn-apply:hover {
+  background-color: #4b6d59;
 }
 
 .btn-checkout {
-  background-color: var(--black);
+  background-color: #5f8670;
   color: white;
   border: none;
+  font-weight: bold;
 }
-
 .btn-checkout:hover {
-  background-color: var(--purple);
+  background-color: #4b6d59;
 }
 
-.btn-update {
-  background-color: var(--green);
-  color: white;
-  border: none;
+.table th,
+.table td {
+  vertical-align: middle !important;
 }
 
-.btn-update:hover {
-  background-color: var(--black);
+.cart-item img {
+  border-radius: 8px;
+  max-height: 80px;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .btn-checkout {
+    width: 100%;
+    text-align: center;
+  }
+
+  .cart-item td:nth-child(2),
+  .cart-item td:nth-child(3),
+  .cart-item td:nth-child(4),
+  .cart-item td:nth-child(5) {
+    font-size: 0.9rem;
+  }
+
+  .cart-item img {
+    max-width: 60px;
+  }
+
+  form input[type="number"] {
+    width: 60px !important;
+  }
 }
