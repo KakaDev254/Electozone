@@ -22,7 +22,7 @@
         <a class="navbar-brand fw-bold" href="{% url 'home' %}">
           <i class="bx bx-bolt text-warning"></i> ElectroZone
         </a>
-
+    
         <!-- Desktop Search -->
         <form
           class="d-none d-lg-flex w-50"
@@ -42,7 +42,7 @@
             </button>
           </div>
         </form>
-
+    
         <!-- Desktop Cart and User -->
         <div class="d-none d-lg-flex align-items-center">
           <!-- Cart Icon -->
@@ -58,7 +58,7 @@
               {{ cart_count }}
             </span>
           </a>
-
+    
           <!-- User Icon -->
           {% if user.is_authenticated %}
           <a
@@ -70,8 +70,8 @@
           </a>
           {% endif %}
         </div>
-
-        <!-- Mobile: Search + Cart + Hamburger -->
+    
+        <!-- Mobile: Search + Cart + Profile + Hamburger -->
         <div class="d-flex align-items-center gap-3 ms-auto d-lg-none">
           <!-- Search Icon -->
           <button
@@ -81,7 +81,7 @@
           >
             <i class="bx bx-search fs-4 text-white"></i>
           </button>
-
+    
           <!-- Cart Icon -->
           <a href="{% url 'view_cart' %}" class="position-relative text-white">
             <i class="bx bx-cart fs-4"></i>
@@ -91,7 +91,14 @@
               {{ cart_count }}
             </span>
           </a>
-
+    
+          <!-- Profile Icon -->
+          {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="text-white">
+            <i class="bx bx-user-circle fs-4"></i>
+          </a>
+          {% endif %}
+    
           <!-- Hamburger -->
           <button
             class="btn p-0 bg-transparent border-0"
@@ -107,7 +114,7 @@
           </button>
         </div>
       </div>
-
+    
       <!-- Mobile Search Bar -->
       <div class="d-lg-none px-3" id="mobileSearchForm">
         <form method="GET" action="{% url 'product_search' %}">
@@ -124,7 +131,7 @@
           </div>
         </form>
       </div>
-
+    
       <!-- Collapsible Navbar -->
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
@@ -149,6 +156,7 @@
         </ul>
       </div>
     </nav>
+    
 
     {% if messages %}
     <div class="container mt-3">

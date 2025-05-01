@@ -1,4 +1,74 @@
 {% extends 'base.html' %} {% block content %}
+<style>
+  .form-container {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    max-width: 400px;
+    width: 100%;
+    margin-top: 60px;
+    margin-bottom: 60px;
+  }
+  
+  .form-container h3 {
+    color: #5f8670;
+    font-weight: bold;
+  }
+  
+  .form-label {
+    color: #5f8670;
+    font-weight: 500;
+  }
+  
+  .form-control {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+  /* Black Button */
+  .form-container button[type="submit"] {
+    background-color: #000000;
+    color: #ffffff;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 15px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .form-container button[type="submit"]:hover {
+    background-color: #333333;
+  }
+  
+  /* Link below the form */
+  .form-container p {
+    margin-top: 20px;
+    font-size: 14px;
+  }
+  
+  .form-container a {
+    color: #5f8670;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .form-container a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Responsive tweaks */
+  @media (max-width: 576px) {
+    .form-container {
+      padding: 20px;
+      margin: 30px 15px;
+    }
+  }
+</style>
 <div class="container mt-5">
   <div
     class="form-container mx-auto shadow p-4 rounded"

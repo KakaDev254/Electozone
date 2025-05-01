@@ -1,6 +1,86 @@
 <!-- accounts/templates/accounts/profile.html -->
 
 {% extends 'base.html' %} {% load widget_tweaks %} {% block content %}
+<style>
+  .container {
+    max-width: 700px;
+    background-color: #ffffff;
+    padding: 30px;
+    margin-top: 60px;
+    border-radius: 10px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+  }
+
+  h2 {
+    color: #5f8670;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #ff9800;
+    padding-bottom: 10px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  label {
+    font-weight: 600;
+    color: #820300;
+  }
+
+  .form-control {
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .btn-primary {
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    padding: 12px 20px;
+    font-weight: 600;
+    border-radius: 6px;
+    margin-top: 15px;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    background-color: #333333;
+  }
+
+  /* Orders Button */
+  a.btn-primary.px-4 {
+    background-color: #ff9800;
+    color: white;
+    text-decoration: none;
+    padding: 12px 24px;
+    display: inline-block;
+    border-radius: 6px;
+    margin-top: 20px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+  }
+
+  a.btn-primary.px-4:hover {
+    background-color: #e38700;
+  }
+
+  /* Responsive layout */
+  @media (max-width: 576px) {
+    .container {
+      padding: 20px;
+      margin: 30px 15px;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+</style>
 <div class="container mt-4">
   <h2 class="mb-4">User Profile</h2>
   <form method="POST" class="form-group">

@@ -1,71 +1,133 @@
-/* ElectroZone Cart Styles */
-
-.btn-update {
-  background-color: #ff9800;
-  color: white;
-  border: none;
-}
-.btn-update:hover {
-  background-color: #e68a00;
+/* Responsive Table */
+.table-responsive {
+  overflow-x: auto;
 }
 
-.btn-remove {
-  background-color: #b80000;
-  color: white;
-  border: none;
-}
-.btn-remove:hover {
-  background-color: #820300;
+table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.btn-apply {
-  background-color: #5f8670;
-  color: white;
-  border: none;
-}
-.btn-apply:hover {
-  background-color: #4b6d59;
-}
-
-.btn-checkout {
-  background-color: #5f8670;
-  color: white;
-  border: none;
-  font-weight: bold;
-}
-.btn-checkout:hover {
-  background-color: #4b6d59;
-}
-
-.table th,
-.table td {
+/* Table cells */
+th,
+td {
   vertical-align: middle !important;
 }
 
-.cart-item img {
-  border-radius: 8px;
-  max-height: 80px;
-  object-fit: cover;
+/* Buttons */
+.btn {
+  border-radius: 4px;
+  font-weight: 500;
 }
 
+.btn-update {
+  background-color: #000;
+  color: #fff;
+  border: none;
+}
+
+.btn-update:hover {
+  background-color: #333;
+}
+
+.btn-remove {
+  background-color: #ff4d4d;
+  color: #fff;
+  border: none;
+}
+
+.btn-remove:hover {
+  background-color: #e60000;
+}
+
+.btn-apply,
+.btn-checkout,
+.btn-primary {
+  background-color: #ff9800;
+  color: #fff;
+  border: none;
+}
+
+.btn-apply:hover,
+.btn-checkout:hover,
+.btn-primary:hover {
+  background-color: #e07e00;
+}
+
+/* Form Controls */
+input[type="number"],
+input[type="text"],
+select.form-select {
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+/* Delivery Message */
+.text-success {
+  color: green;
+}
+
+/* Final Total Highlight */
+h4 span.text-success {
+  color: #28a745;
+}
+
+/* Coupon Form */
+form[action*="apply_coupon"] {
+  margin-bottom: 30px;
+}
+
+/* Checkout Button Section */
+.btn-checkout {
+  font-size: 16px;
+  padding: 10px 24px;
+  background-color: #000;
+  color: #fff;
+}
+
+.btn-checkout:hover {
+  background-color: #333;
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .btn-checkout {
+  .table thead {
+    display: none;
+  }
+
+  .table tbody tr {
+    display: block;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .table tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+  }
+
+  .d-flex {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .d-flex.align-items-center {
+    align-items: flex-start !important;
+  }
+
+  .form-control,
+  .form-select {
+    width: 100% !important;
+  }
+
+  .btn {
     width: 100%;
+  }
+
+  .btn-checkout {
     text-align: center;
-  }
-
-  .cart-item td:nth-child(2),
-  .cart-item td:nth-child(3),
-  .cart-item td:nth-child(4),
-  .cart-item td:nth-child(5) {
-    font-size: 0.9rem;
-  }
-
-  .cart-item img {
-    max-width: 60px;
-  }
-
-  form input[type="number"] {
-    width: 60px !important;
+    width: 100%;
   }
 }
