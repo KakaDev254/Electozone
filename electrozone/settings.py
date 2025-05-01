@@ -2,26 +2,30 @@
 
 from pathlib import Path
 import os
-from decouple import config, Csv
 from dotenv import load_dotenv
+
+# Load environment variables from .env
 load_dotenv()
 
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = ['*']
+# Secret Key
+SECRET_KEY = os.getenv('SECRET_KEY')
 
+# Debug mode (use 'True' or 'False' as string in .env)
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-MPESA_ENVIRONMENT = config('MPESA_ENVIRONMENT')
-MPESA_CONSUMER_KEY = config('MPESA_CONSUMER_KEY')
-MPESA_CONSUMER_SECRET = config('MPESA_CONSUMER_SECRET')
-MPESA_SHORTCODE = config('MPESA_SHORTCODE')
-MPESA_PASSKEY = config('MPESA_PASSKEY')
-MPESA_CALLBACK_URL = config('MPESA_CALLBACK_URL')
+# Allowed hosts
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
+# M-Pesa Configuration
+MPESA_ENVIRONMENT = os.getenv("MPESA_ENVIRONMENT")  # 'sandbox' or 'production'
+MPESA_CONSUMER_KEY = os.getenv("MPESA_CONSUMER_KEY")
+MPESA_CONSUMER_SECRET = os.getenv("MPESA_CONSUMER_SECRET")
+MPESA_SHORTCODE = os.getenv("MPESA_SHORTCODE")
+MPESA_PASSKEY = os.getenv("MPESA_PASSKEY")
+MPESA_CALLBACK_URL = os.getenv("MPESA_CALLBACK_URL")
 # Application definition
 
 INSTALLED_APPS = [
