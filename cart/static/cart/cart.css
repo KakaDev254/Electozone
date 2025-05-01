@@ -1,133 +1,99 @@
-/* Responsive Table */
+h2 {
+  font-weight: 700;
+  color: #333;
+}
+
 .table-responsive {
-  overflow-x: auto;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.03);
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+/* Table headers */
+.table thead th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* Table cells */
-th,
-td {
-  vertical-align: middle !important;
+/* Cart item rows */
+.cart-item td {
+  vertical-align: middle;
 }
 
-/* Buttons */
-.btn {
-  border-radius: 4px;
+.cart-item img {
+  max-width: 70px;
+  border-radius: 8px;
+}
+
+/* Quantity input */
+input[type="number"] {
+  text-align: center;
   font-weight: 500;
 }
 
-.btn-update {
+/* Buttons */
+.btn-dark,
+.btn-outline-dark {
+  transition: background 0.3s, color 0.3s;
+}
+
+.btn-dark:hover {
   background-color: #000;
+}
+
+.btn-outline-dark:hover {
+  background-color: #343a40;
   color: #fff;
+}
+
+.btn-danger {
+  background-color: #dc3545;
   border: none;
 }
 
-.btn-update:hover {
-  background-color: #333;
+.btn-danger:hover {
+  background-color: #b02a37;
 }
 
-.btn-remove {
-  background-color: #ff4d4d;
-  color: #fff;
-  border: none;
+/* Coupon, delivery, and checkout sections */
+form select,
+form input[type="text"] {
+  max-width: 300px;
 }
 
-.btn-remove:hover {
-  background-color: #e60000;
+form .btn {
+  white-space: nowrap;
 }
 
-.btn-apply,
-.btn-checkout,
-.btn-primary {
-  background-color: #ff9800;
-  color: #fff;
-  border: none;
+.mt-2.text-success {
+  font-size: 0.95rem;
 }
 
-.btn-apply:hover,
-.btn-checkout:hover,
-.btn-primary:hover {
-  background-color: #e07e00;
+.border-top.pt-3 {
+  border-top: 2px solid #dee2e6 !important;
 }
 
-/* Form Controls */
-input[type="number"],
-input[type="text"],
-select.form-select {
-  border: 1px solid #ccc;
-  padding: 6px 10px;
-  font-size: 14px;
-}
-
-/* Delivery Message */
-.text-success {
-  color: green;
-}
-
-/* Final Total Highlight */
+/* Final total highlight */
 h4 span.text-success {
-  color: #28a745;
+  font-weight: 700;
+  font-size: 1.25rem;
 }
 
-/* Coupon Form */
-form[action*="apply_coupon"] {
-  margin-bottom: 30px;
-}
-
-/* Checkout Button Section */
-.btn-checkout {
-  font-size: 16px;
-  padding: 10px 24px;
-  background-color: #000;
-  color: #fff;
-}
-
-.btn-checkout:hover {
-  background-color: #333;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .table thead {
-    display: none;
+/* Responsive spacing tweaks */
+@media (max-width: 576px) {
+  .table-responsive {
+    font-size: 0.9rem;
   }
 
-  .table tbody tr {
-    display: block;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #ddd;
-  }
-
-  .table tbody td {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-  }
-
-  .d-flex {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .d-flex.align-items-center {
-    align-items: flex-start !important;
-  }
-
-  .form-control,
-  .form-select {
-    width: 100% !important;
+  .cart-item img {
+    max-width: 60px;
   }
 
   .btn {
-    width: 100%;
-  }
-
-  .btn-checkout {
-    text-align: center;
-    width: 100%;
+    font-size: 0.85rem;
   }
 }
