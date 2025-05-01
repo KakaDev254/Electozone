@@ -1,0 +1,77 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+    
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; }
+    input { padding: 8px; width: 300px; }
+    button { padding: 10px 20px; background-color: #28a745; color: white; border: none; cursor: pointer; }
+    .message { margin-top: 20px; padding: 10px; border-radius: 5px; }
+    .success { background-color: #d4edda; color: #155724; }
+    .error { background-color: #f8d7da; color: #721c24; }
+</style>
+</head>
+
+
+<h2>M-Pesa Express Payment</h2>
+
+<div class="form-group">
+    <label for="phone">Phone Number (Format: 2547XXXXXXXX)</label>
+    <input type="text" id="phone" placeholder="e.g. 254712345678">
+</div>
+
+<div class="form-group">
+    <label for="amount">Amount (KES)</label>
+    <input type="number" id="amount" placeholder="e.g. 100">
+</div>
+
+<button id="payBtn">Pay Now</button>
+
+<div id="responseMessage" class="message" style="display: none;"></div>
+
+<script>
+    // Get CSRF token
+    function getCSRFToken() {
+        return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    }
+
+    $('#payBtn').on('click', function() {
+        const phone = $('#phone').val();
+        const amount = $('#amount').val();
+        const csrfToken = getCSRFToken();
+
+        $('#responseMessage').hide().removeClass('success error');
+
+        if (!phone || !amount) {
+            $('#responseMessage').addClass('error').text("Please fill all fields.").show();
+            return;
+        }
+
+        $.ajax({
+            url: "{% url 'stk_push' %}",
+            type: "POST",
+            data: {
+                phone: phone,
+                amount: amount,
+                csrfmiddlewaretoken: csrfToken
+            },
+            success: function(response) {
+                if (response.errorMessage) {
+                    $('#responseMessage').addClass('error').text(response.errorMessage).show();
+                } else if (response.ResponseDescription) {
+                    $('#responseMessage').addClass('success').text(response.ResponseDescription).show();
+                } else {
+                    $('#responseMessage').addClass('success').text("STK Push sent! Check your phone.").show();
+                }
+            },
+            error: function(xhr) {
+                let msg = "An error occurred.";
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    msg = xhr.responseJSON.error;
+                }
+                $('#responseMessage').addClass('error').text(msg).show();
+            }
+        });
+    });
+</script>
+{% endblock content %}
