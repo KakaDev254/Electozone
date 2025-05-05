@@ -1,12 +1,10 @@
 from django.urls import path
-from .views import *
-
+from . import views
 
 urlpatterns = [
-    path('stk-push/', initiate_stk_push, name='stk_push'),
-     path('mpesa/callback/', mpesa_callback, name='mpesa_callback'),
-    path('pay/', payment_page, name='payment_page'),
-    path('check_payment_status/', check_payment_status, name='payment_status'),
-
-
+    path('pay/', views.payment_page, name='payment_page'),
+    path('stk-push/', views.stk_push_request, name='stk_push'),
+    path('payment-status/', views.payment_status, name='payment_status'),
+    path('callback/', views.mpesa_callback, name='mpesa_callback'),
 ]
+

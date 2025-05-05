@@ -1,153 +1,127 @@
 {% extends 'base.html' %} {% load static %} {% block content %}
 <link rel="stylesheet" href="{% static 'mpesa/payment.css' %}" />
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <div class="container">
-  <h2>M-Pesa Express Payment</h2>
+  <div class="payment-container">
+    <h4 class="text-center mb-4" style="color: #5f8670">
+      <i class="bx bx-mobile"></i> Pay with M-Pesa
+    </h4>
+    <form id="mpesaForm">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="phone" class="form-label">Safaricom Number</label>
+        <input
+          type="tel"
+          class="form-control"
+          id="phoneInput"
+          name="phone"
+          placeholder="e.g. 0722123456"
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <label for="amount" class="form-label">Amount</label>
+        <input
+          type="number"
+          class="form-control"
+          name="amount"
+          value="100"
+          required
+        />
+      </div>
+      <button type="submit" class="btn btn-pay w-100">Pay with M-Pesa</button>
 
-  <form id="paymentForm">
-    {% csrf_token %}
-    <div class="form-group">
-      <label for="phone">Phone Number (Format: 2547XXXXXXXX)</label>
-      <input
-        type="text"
-        id="phone"
-        name="phone"
-        placeholder="e.g. 254712345678"
-        required
-      />
-    </div>
-
-    <div class="form-group">
-      <label for="amount">Amount (KES)</label>
-      <input
-        type="number"
-        id="amount"
-        name="amount"
-        placeholder="e.g. 100"
-        required
-      />
-    </div>
-
-    <button type="submit" id="payBtn">Pay Now</button>
-    <div id="loadingSpinner" class="hidden">
-      <img src="{% static 'images/spinner.gif' %}" alt="Loading" />
-      Processing payment...
-    </div>
-  </form>
-
-  <div id="responseMessage" class="message hidden"></div>
+      <div id="loader" class="text-center mt-3" style="display: none">
+        <i class="bx bx-loader bx-spin"></i> Awaiting customer PIN...
+      </div>
+      <div id="resultMessage" class="text-center mt-3 fw-bold"></div>
+    </form>
+  </div>
 </div>
 
 <script>
-  $("#paymentForm").on("submit", function (e) {
-    e.preventDefault();
-
-    const phone = $("#phone").val();
-    const amount = $("#amount").val();
-    const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
-
-    // Hide previous messages and show loading spinner
-    $("#responseMessage")
-      .hide()
-      .removeClass("success error loading")
-      .addClass("hidden");
-    $("#loadingSpinner").removeClass("hidden");
-
-    // Validate input
-    if (!phone || !amount) {
-      $("#responseMessage")
-        .removeClass("hidden")
-        .addClass("error")
-        .text("Please fill all fields.")
-        .show();
-      $("#loadingSpinner").addClass("hidden");
-      return;
+  const phoneInput = document.getElementById("phoneInput");
+  phoneInput.addEventListener("input", function () {
+    let digits = this.value.replace(/\D/g, "");
+    if (!digits.startsWith("254")) {
+      digits = "254" + digits.replace(/^0+|^254/, "");
     }
-
-    $.ajax({
-      url: "{% url 'stk_push' %}",
-      type: "POST",
-      data: {
-        phone: phone,
-        amount: amount,
-        csrfmiddlewaretoken: csrfToken,
-      },
-      success: function (response) {
-        // Show response based on result
-        if (response.error) {
-          $("#responseMessage")
-            .removeClass("hidden")
-            .addClass("error")
-            .text(response.error)
-            .show();
-        } else if (response.ResponseDescription) {
-          $("#responseMessage")
-            .removeClass("hidden")
-            .addClass("success")
-            .text(response.ResponseDescription)
-            .show();
-          // Start polling for payment status
-          pollPaymentStatus(response.CheckoutRequestID);
-        } else {
-          $("#responseMessage")
-            .removeClass("hidden")
-            .addClass("success")
-            .text("STK Push sent! Check your phone.")
-            .show();
-          // Start polling for payment status
-          pollPaymentStatus(response.CheckoutRequestID);
-        }
-        $("#loadingSpinner").addClass("hidden");
-      },
-      error: function (xhr) {
-        let msg = "An error occurred.";
-        if (xhr.responseJSON && xhr.responseJSON.error) {
-          msg = xhr.responseJSON.error;
-        }
-        $("#responseMessage")
-          .removeClass("hidden")
-          .addClass("error")
-          .text(msg)
-          .show();
-        $("#loadingSpinner").addClass("hidden");
-      },
-    });
+    if (digits.length > 12) {
+      digits = digits.slice(0, 12);
+    }
+    this.value = digits;
   });
 
-  function pollPaymentStatus(checkoutRequestID) {
-    const interval = setInterval(function () {
-      $.ajax({
-        url: "{% url 'payment_status' %}",
-        type: "GET",
-        data: { checkoutRequestID: checkoutRequestID },
-        success: function (response) {
-          if (response.status === "Completed") {
-            $("#responseMessage")
-              .removeClass("hidden")
-              .addClass("success")
-              .text("Payment completed successfully!")
-              .show();
-            clearInterval(interval); // Stop polling after success
-          } else if (response.status === "Failed") {
-            $("#responseMessage")
-              .removeClass("hidden")
-              .addClass("error")
-              .text("Payment failed. Please try again.")
-              .show();
-            clearInterval(interval); // Stop polling after failure
-          }
-        },
-        error: function () {
-          $("#responseMessage")
-            .removeClass("hidden")
-            .addClass("error")
-            .text("Error checking payment status.")
-            .show();
-          clearInterval(interval); // Stop polling if error occurs
-        },
+  document.getElementById("mpesaForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const loader = document.getElementById("loader");
+    const result = document.getElementById("resultMessage");
+    loader.style.display = "block";
+    result.textContent = "";
+
+    const formData = new FormData(this);
+
+    fetch("{% url 'stk_push' %}", {
+      method: "POST",
+      body: formData,
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ResponseCode === "0") {
+          const checkoutID = data.CheckoutRequestID;
+          pollPaymentStatus(checkoutID); // Start polling
+        } else {
+          loader.style.display = "none";
+          result.textContent =
+            data.errorMessage || "Failed to initiate payment.";
+          result.className = "text-danger text-center";
+        }
+      })
+      .catch((error) => {
+        loader.style.display = "none";
+        result.textContent = "An error occurred. Please try again.";
+        result.className = "text-danger text-center";
       });
-    }, 5000); // Poll every 5 seconds
+  });
+
+  function pollPaymentStatus(checkoutID) {
+    const loader = document.getElementById("loader");
+    const result = document.getElementById("resultMessage");
+
+    let attempts = 0;
+    const maxAttempts = 20; // max 20 polling attempts to avoid infinite looping
+    const interval = setInterval(() => {
+      fetch(`/mpesa/payment-status/?checkout_id=${checkoutID}`)
+        .then((res) => res.json())
+        .then((data) => {
+          // If payment is no longer pending, stop polling and display result
+          if (data.status !== "pending") {
+            clearInterval(interval); // Stop polling
+            loader.style.display = "none"; // Hide loader
+            result.textContent = data.message; // Display result message
+            result.className = data.success
+              ? "text-success text-center"
+              : "text-danger text-center"; // Update result style (success or failure)
+          }
+        })
+        .catch((err) => {
+          console.log("Polling error:", err);
+        });
+
+      attempts++;
+      // Timeout condition if no status is received after max attempts
+      if (attempts >= maxAttempts) {
+        clearInterval(interval); // Stop polling
+        loader.style.display = "none"; // Hide loader
+        result.textContent = "⌛ Timeout — payment status not received."; // Timeout message
+        result.className = "text-danger text-center"; // Timeout error style
+      }
+    }, 3000); // Poll every 3 seconds
   }
 </script>
+
 {% endblock content %}

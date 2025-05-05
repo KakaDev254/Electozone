@@ -1,127 +1,123 @@
-import json
-from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
-from django.shortcuts import render, get_object_or_404
-from django.utils.dateparse import parse_datetime
-from .utils import lipa_na_mpesa
-from .models import MpesaPayment
+from django.http import JsonResponse
+from django.conf import settings
+from django.shortcuts import render
+import requests
+import json
+from .models import Payment 
+from .utils import get_access_token, generate_password, format_phone_number
 
-@require_POST
-def initiate_stk_push(request):
-    try:
-        phone = request.POST.get("phone")
-        amount = request.POST.get("amount")
-
-        if not phone or not amount:
-            return JsonResponse({"error": "Phone number and amount are required."}, status=400)
-
-        amount = int(amount)
-        response = lipa_na_mpesa(phone, amount)
-
-        if isinstance(response, dict) and response.get("ResponseCode") == "0":
-            MpesaPayment.objects.create(
-                user=request.user if request.user.is_authenticated else None,
-                phone_number=phone,
-                amount=amount,
-                merchant_request_id=response.get("MerchantRequestID"),
-                checkout_request_id=response.get("CheckoutRequestID"),
-                response_code=response.get("ResponseCode"),
-                response_description=response.get("ResponseDescription"),
-                status="Pending"
-            )
-            return JsonResponse({"message": "STK Push sent successfully", **response})
-        else:
-            return JsonResponse({"error": "Failed to initiate STK Push", **response}, status=400)
-
-    except ValueError:
-        return JsonResponse({"error": "Amount must be a valid number."}, status=400)
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
-
-
+# STK Push Request to initiate payment
 @csrf_exempt
-@require_POST
+def stk_push_request(request):
+    if request.method == 'POST':
+        raw_phone = request.POST.get('phone')
+        amount = request.POST.get('amount')
+
+        phone = format_phone_number(raw_phone)
+
+        if not phone or not phone.startswith("2547") or len(phone) != 12:
+            return JsonResponse({'errorMessage': 'Invalid Safaricom number. Use formats like 0723XXXXXX or 2547XXXXXXX.'}, status=400)
+
+        access_token = get_access_token()
+        password, timestamp = generate_password()
+
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json"
+        }
+
+        payload = {
+            "BusinessShortCode": settings.MPESA_SHORTCODE,
+            "Password": password,
+            "Timestamp": timestamp,
+            "TransactionType": "CustomerPayBillOnline",
+            "Amount": amount,
+            "PartyA": phone,
+            "PartyB": settings.MPESA_SHORTCODE,
+            "PhoneNumber": phone,
+            "CallBackURL": settings.MPESA_CALLBACK_URL,
+            "AccountReference": "ElectroZone",
+            "TransactionDesc": "Payment for goods"
+        }
+
+        response = requests.post(
+            "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+            headers=headers,
+            data=json.dumps(payload)
+        )
+
+        response_data = response.json()
+
+        # Save the payment in the database to track callback
+        if response_data.get("ResponseCode") == "0":
+            Payment.objects.create(
+                phone=phone,
+                amount=amount,
+                checkout_id=response_data.get("CheckoutRequestID"),
+                status="pending"
+            )
+
+        return JsonResponse(response_data)
+
+    return JsonResponse({'error': 'Invalid request method. Use POST.'}, status=400)
+
+# MPesa Callback view to handle STK result
+@csrf_exempt
 def mpesa_callback(request):
-    """
-    Handles the callback from M-Pesa after a payment is processed.
-    Updates the payment status in the database based on the response.
-    """
+    # Parse the JSON payload from M-Pesa
+    data = json.loads(request.body.decode('utf-8'))
+    print("Callback received:", json.dumps(data, indent=2))
+
+    # Extract result data
+    result_code = data.get('Body', {}).get('stkCallback', {}).get('ResultCode')
+    checkout_id = data.get('Body', {}).get('stkCallback', {}).get('CheckoutRequestID')
+    result_desc = data.get('Body', {}).get('stkCallback', {}).get('ResultDesc')
+
+    # Handle payment based on result code
     try:
-        # Parse the callback data from M-Pesa
-        data = json.loads(request.body)
-        print("M-Pesa Callback Received:", data)
+        payment = Payment.objects.get(checkout_id=checkout_id)
+        payment.message = result_desc
 
-        # Extract relevant data from the callback
-        checkout_request_id = data.get("CheckoutRequestID")
-        result_code = data.get("ResultCode")
-        result_desc = data.get("ResultDesc")
-        merchant_request_id = data.get("MerchantRequestID")
+        # Update payment status based on result code
+        if result_code == 0:  # Success
+            payment.status = 'success'
+        elif result_code == 1032:  # User cancelled
+            payment.status = 'cancelled'
+        elif result_code == 1037:  # Timeout
+            payment.status = 'timeout'
+        elif result_code == 2001:  # Incorrect PIN
+            payment.status = 'failed'
+        else:  # Other error codes
+            payment.status = 'failed'
 
-        # Check if the payment record exists based on the CheckoutRequestID
-        payment = MpesaPayment.objects.get(checkout_request_id=checkout_request_id)
-
-        # Update the payment status based on the result code
-        if result_code == "0":
-            # Payment was successful
-            payment.status = "Completed"
-            payment.result_code = result_code
-            payment.result_description = result_desc
-        else:
-            # Payment failed
-            payment.status = "Failed"
-            payment.result_code = result_code
-            payment.result_description = result_desc
-
-        # Update additional fields if necessary
-        payment.response_code = result_code
-        payment.response_description = result_desc
-        payment.transaction_date = data.get("TransactionDate")
-
-        # Save the updated payment record
         payment.save()
 
-        # Log or process any additional logic here, like sending an email or notification.
+    except Payment.DoesNotExist:
+        print(f"CheckoutRequestID {checkout_id} not found in Payment table")
 
-        # Respond with success message
-        return JsonResponse({"ResultCode": 0, "ResultDesc": "Accepted"})
-
-    except json.JSONDecodeError:
-        # Handle invalid JSON in the callback data
-        return JsonResponse({"ResultCode": 1, "ResultDesc": "Invalid JSON in callback."}, status=400)
-    except MpesaPayment.DoesNotExist:
-        # Handle case where payment record is not found
-        return JsonResponse({"ResultCode": 1, "ResultDesc": "Payment record not found."}, status=404)
-    except Exception as e:
-        # Handle any other exceptions that may occur
-        return JsonResponse({"ResultCode": 1, "ResultDesc": str(e)}, status=500)
-    
-def check_payment_status(request):
-    """
-    View to check the payment status by CheckoutRequestID.
-    This will be called periodically from the frontend to check the payment status.
-    """
-    # Extract the CheckoutRequestID from the GET request
-    checkout_request_id = request.GET.get('checkoutRequestID')
-
-    if not checkout_request_id:
-        return JsonResponse({"error": "CheckoutRequestID is required."}, status=400)
-
-    # Get the MpesaPayment object by CheckoutRequestID (or other unique identifier)
-    payment = get_object_or_404(MpesaPayment, checkout_request_id=checkout_request_id)
-
-    # Return the current status of the payment
-    status = payment.status
-    if status == "Pending":
-        # If the status is still pending, you can return an ongoing status or similar
-        return JsonResponse({"status": "Pending", "message": "Your payment is still being processed."})
-    elif status == "Completed":
-        return JsonResponse({"status": "Completed", "message": "Payment completed successfully!"})
-    elif status == "Failed":
-        return JsonResponse({"status": "Failed", "message": "Payment failed. Please try again."})
-
-    return JsonResponse({"status": "Unknown", "message": "Unknown payment status."})    
+    # Respond with a success message back to M-Pesa to confirm callback processing
+    return JsonResponse({"ResultCode": 0, "ResultDesc": "Callback received successfully"})
 
 
+# Endpoint to check the payment status
+def payment_status(request):
+    checkout_id = request.GET.get("checkout_id")
+    if not checkout_id:
+        return JsonResponse({"error": "checkout_id not provided"}, status=400)
+
+    try:
+        payment = Payment.objects.get(checkout_id=checkout_id)
+        if payment.status == "pending":
+            return JsonResponse({"status": "pending"})
+        return JsonResponse({
+            "status": payment.status,
+            "message": payment.message,
+            "success": payment.status == "success"
+        })
+    except Payment.DoesNotExist:
+        return JsonResponse({"status": "pending"})
+
+# Payment page rendering
 def payment_page(request):
     return render(request, 'mpesa/payment.html')
