@@ -48,7 +48,7 @@ def checkout_view(request):
 
         if not cart or not items:
             messages.error(request, "Your cart is empty.")
-            return redirect('cart_view')
+            return redirect('view_cart')
 
         if form.is_valid():
             order = form.save(commit=False)
