@@ -105,6 +105,9 @@
   .hero h1 {
     font-size: 2rem;
   }
+  .categories-bar a {
+    font-size: 32px;
+  }
 }
 
 @media (max-width: 576px) {
