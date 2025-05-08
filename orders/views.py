@@ -14,7 +14,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
+@login_required(login_url='login') 
 def checkout_view(request):
     try:
         cart = Cart.objects.get(user=request.user)
