@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import transaction
+from decimal import Decimal
 from django.core.exceptions import PermissionDenied
 from .forms import OrderForm
 from .models import Order, OrderItem
@@ -22,8 +23,25 @@ def checkout_view(request):
         cart = None
         items = []
 
-    delivery_fee = request.session.get("delivery_fee", 0)
-    delivery_message = request.session.get("delivery_message", "")
+    delivery_fee = cart.delivery_location.delivery_fee if cart and cart.delivery_location else Decimal('0')
+    delivery_message = f"Delivery Fee: Ksh {delivery_fee}" if cart and cart.delivery_location else "Select a delivery location to view delivery fee."
+
+    coupon_discount = Decimal('0')
+    discount_message = ""
+
+    if cart and cart.coupon and cart.coupon.is_valid():
+        if cart.coupon.discount_type == 'percentage':
+            coupon_discount = cart.get_total() * Decimal(cart.coupon.discount_value) / Decimal('100')
+            discount_message = f'Coupon "{cart.coupon.code}" applied! Discount: {cart.coupon.discount_value}% off'
+        elif cart.coupon.discount_type == 'fixed':
+            coupon_discount = Decimal(cart.coupon.discount_value)
+            discount_message = f'Coupon "{cart.coupon.code}" applied! Discount: Ksh {coupon_discount}'
+
+    # Base total includes delivery
+    base_total = cart.get_total() if cart else Decimal('0')
+    items_total = sum(item.get_subtotal() for item in items)
+    total_after_discount = max(base_total - coupon_discount, Decimal('0'))
+    final_total = total_after_discount  # already includes delivery
 
     if request.method == 'POST':
         form = OrderForm(request.POST)
@@ -33,15 +51,15 @@ def checkout_view(request):
             return redirect('cart_view')
 
         if form.is_valid():
-            # Save the order
             order = form.save(commit=False)
             order.user = request.user
             order.status = Order.PENDING
-            order.delivery_fee = delivery_fee or 0
-            order.delivery_message = delivery_message or ""
+            order.delivery_fee = delivery_fee
+            order.delivery_message = delivery_message
+            order.coupon = cart.coupon if cart and cart.coupon else None
+            order.total_amount = final_total
             order.save()
 
-            # Create order items
             for item in items:
                 OrderItem.objects.create(
                     order=order,
@@ -50,12 +68,10 @@ def checkout_view(request):
                     price=item.product.price
                 )
 
-            # Update coupon usage if applied
             if cart.coupon:
                 cart.coupon.used_count += 1
                 cart.coupon.save()
 
-            # Clear cart after order is placed
             cart.items.all().delete()
             cart.coupon = None
             cart.save()
@@ -64,15 +80,18 @@ def checkout_view(request):
     else:
         form = OrderForm()
 
-    subtotal = sum(item.get_subtotal() for item in items)
-
     return render(request, 'orders/checkout.html', {
         'form': form,
         'cart': cart,
         'items': items,
+        'items_total': items_total,
+        'base_total': base_total,
+        'coupon_discount': coupon_discount,
+        'discount_message': discount_message,
         'delivery_fee': delivery_fee,
         'delivery_message': delivery_message,
-        'subtotal': subtotal,
+        'total_after_discount': total_after_discount,
+        'final_total': final_total,
     })
 
 

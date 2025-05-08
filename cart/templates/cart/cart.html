@@ -11,8 +11,10 @@
     .text-purple { color: var(--purple); }
     .text-gold { color: var(--gold); }
     .btn-gold { background-color: var(--gold); color: white; }
-    .btn-outline-gold { border-color: var(--gold); color: var(--gold); }
+    .btn-outline-gold { border: 1px solid var(--gold); color: var(--gold); }
     .btn-outline-gold:hover { background-color: var(--gold); color: white; }
+    .btn-purple { background-color: var(--purple); color: white; }
+    .btn-purple:hover { background-color: #d01b7d; color: white; }
 </style>
 
 <div class="container py-5">
@@ -30,7 +32,7 @@
     {% endif %}
 
     {% if cart.items.count %}
-    <div class="row">
+    <div class="row gy-4">
         <!-- Cart Items -->
         <div class="col-lg-8">
             <div class="card shadow-sm mb-4">
@@ -39,14 +41,14 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-striped align-middle">
-                            <thead>
+                        <table class="table align-middle table-hover">
+                            <thead class="table-light">
                                 <tr>
                                     <th>Product</th>
-                                    <th>Price</th>
-                                    <th>Quantity</th>
-                                    <th>Subtotal</th>
-                                    <th></th>
+                                    <th class="text-end">Price</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-end">Subtotal</th>
+                                    <th class="text-center"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -54,12 +56,12 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            {% if item.product.image %}
+                                            {% if item.product.main_image %}
                                             <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}"
-                                                 class="img-thumbnail me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                                                 class="img-thumbnail me-2" style="width: 70px; height: 70px; object-fit: cover;">
                                             {% else %}
                                             <img src="{% static 'images/placeholder-product.png' %}" alt="No image"
-                                                 class="img-thumbnail me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                                                 class="img-thumbnail me-2" style="width: 70px; height: 70px; object-fit: cover;">
                                             {% endif %}
                                             <div>
                                                 <h6 class="mb-1">{{ item.product.name }}</h6>
@@ -67,19 +69,19 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="text-purple">Ksh {{ item.product.price }}</td>
-                                    <td>
-                                        <form method="post" action="{% url 'update_cart' item.id %}" class="d-flex">
+                                    <td class="text-end text-purple">Ksh {{ item.product.price }}</td>
+                                    <td class="text-center">
+                                        <form method="post" action="{% url 'update_cart' item.id %}" class="d-flex justify-content-center align-items-center">
                                             {% csrf_token %}
                                             <input type="number" name="quantity" value="{{ item.quantity }}" min="1"
-                                                   class="form-control form-control-sm" style="width: 70px;">
+                                                   class="form-control form-control-sm text-center" style="width: 60px;">
                                             <button type="submit" class="btn btn-sm btn-outline-gold ms-2">
                                                 <i class='bx bx-refresh'></i>
                                             </button>
                                         </form>
                                     </td>
-                                    <td>Ksh {{ item.get_subtotal }}</td>
-                                    <td>
+                                    <td class="text-end">Ksh {{ item.get_subtotal }}</td>
+                                    <td class="text-center">
                                         <form method="post" action="{% url 'remove_from_cart' item.id %}">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-sm btn-outline-danger">
@@ -94,12 +96,9 @@
                     </div>
                 </div>
             </div>
-
-            <div class="mb-4">
-                <a href="{% url 'home' %}" class="btn btn-outline-secondary">
-                    <i class='bx bx-arrow-back me-1'></i> Continue Shopping
-                </a>
-            </div>
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                <i class='bx bx-arrow-back me-1'></i> Continue Shopping
+            </a>
         </div>
 
         <!-- Order Summary -->
@@ -112,10 +111,10 @@
                     <!-- Coupon -->
                     <div class="mb-4">
                         <h6 class="mb-3">Apply Coupon</h6>
-                        <form method="post" action="{% url 'apply_coupon' %}" class="d-flex">
+                        <form method="post" action="{% url 'apply_coupon' %}" class="d-flex flex-wrap gap-2">
                             {% csrf_token %}
                             <input type="text" name="coupon_code" placeholder="Enter coupon code"
-                                   class="form-control form-control-sm me-2">
+                                   class="form-control form-control-sm flex-grow-1">
                             <button type="submit" class="btn btn-sm btn-gold">Apply</button>
                         </form>
                         {% if discount_message %}
@@ -145,7 +144,7 @@
                                     </option>
                                 {% endfor %}
                             </select>
-                            <button type="submit" class="btn btn-sm btn-purple w-100" style="background-color: var(--purple); color: white;">
+                            <button type="submit" class="btn btn-sm btn-purple w-100">
                                 Set Location
                             </button>
                         </form>
@@ -159,6 +158,10 @@
                     <!-- Totals -->
                     <div class="border-top pt-3">
                         <div class="d-flex justify-content-between mb-2">
+                            <span>Delivery Fee:</span>
+                            <span>Ksh {{ delivery_fee }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
                             <span>Subtotal:</span>
                             <span>Ksh {{ base_total }}</span>
                         </div>
@@ -168,15 +171,11 @@
                             <span>- Ksh {{ coupon_discount }}</span>
                         </div>
                         {% endif %}
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Delivery Fee:</span>
-                            <span>Ksh {{ delivery_fee }}</span>
-                        </div>
                         <div class="d-flex justify-content-between fw-bold fs-5 mt-3 pt-2 border-top text-black">
                             <span>Total:</span>
                             <span>Ksh {{ final_total }}</span>
                         </div>
-
+                    
                         <div class="d-grid mt-4">
                             <a href="{% url 'checkout' %}" class="btn btn-gold btn-lg">
                                 Proceed to Checkout

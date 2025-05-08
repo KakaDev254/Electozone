@@ -140,9 +140,10 @@ def payment_status(request):
 # Payment page rendering
 def payment_page(request, order_id):
     order = Order.objects.get(id=order_id, user=request.user)
+    phone = request.user.phone_number or ""
     context = {
         'order': order,
         'amount': round(order.get_total(), 0),  # Ensure no decimal
-        'phone': order.phone_number
+        'phone': phone,
     }
     return render(request, 'mpesa/payment.html', context)

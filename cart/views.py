@@ -23,7 +23,7 @@ def view_cart(request):
     cart = get_cart(request)
     items = cart.items.all()
 
-    base_total = cart.get_total()
+    base_total = cart.get_total()  # This already includes delivery_fee if set on the cart
     coupon_discount = Decimal('0')
     discount_message = ""
 
@@ -35,13 +35,14 @@ def view_cart(request):
             coupon_discount = Decimal(cart.coupon.discount_value)
             discount_message = f'Coupon "{cart.coupon.code}" applied! Discount: Ksh {coupon_discount}'
 
-    delivery_fee = Decimal(str(request.session.get("delivery_fee", '0')))
-    delivery_message = request.session.get("delivery_message", "Select a delivery location to view delivery fee.")
+    # Remove session-based delivery_fee usage to avoid duplication
+    delivery_fee = cart.delivery_location.delivery_fee if cart.delivery_location else Decimal('0')
+    delivery_message = f"Delivery Fee: Ksh {delivery_fee}" if cart.delivery_location else "Select a delivery location to view delivery fee."
 
     delivery_locations = DeliveryLocation.objects.all()
 
     total_after_discount = max(base_total - coupon_discount, Decimal('0'))
-    final_total = total_after_discount + delivery_fee
+    final_total = total_after_discount  # No need to add delivery_fee again
 
     return render(request, 'cart/cart.html', {
         'cart': cart,
@@ -108,7 +109,6 @@ def update_cart(request, item_id):
         return redirect("view_cart")
 
     return redirect("home")
-
 # Apply Coupon
 def apply_coupon(request):
     cart = get_cart(request)

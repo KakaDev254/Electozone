@@ -102,6 +102,9 @@
     flex: 0 0 50%;
     max-width: 50%;
   }
+  .hero h1 {
+    font-size: 2rem;
+  }
 }
 
 @media (max-width: 576px) {

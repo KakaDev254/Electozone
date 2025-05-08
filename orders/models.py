@@ -46,13 +46,27 @@ class Order(models.Model):
     delivery_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     delivery_message = models.CharField(max_length=255, blank=True, null=True)
 
+    # --- Coupon Reference ---
+    coupon = models.ForeignKey('coupons.Coupon', null=True, blank=True, on_delete=models.SET_NULL)
+
     # --- Utility Methods ---
     def __str__(self):
         return f"Order {self.id} - {self.user.email} ({self.status})"
 
     def get_total(self):
         items_total = sum(item.get_subtotal() for item in self.items.all())
-        return items_total + (self.delivery_fee or Decimal('0'))
+        discount = self.apply_coupon_discount(items_total)
+        return items_total - discount + (self.delivery_fee or Decimal('0'))
+
+    def apply_coupon_discount(self, items_total):
+        if self.coupon:
+            if self.coupon.discount_type == 'percentage':
+                # Calculate percentage discount
+                return items_total * (self.coupon.discount_value / 100)
+            elif self.coupon.discount_type == 'fixed':
+                # Fixed amount discount
+                return min(items_total, self.coupon.discount_value)  # Ensure the discount doesn't exceed the total
+        return Decimal('0')
 
     # --- Status Transitions ---
     def _update_status(self, new_status, allowed_from=None, reference=None):
@@ -103,4 +117,3 @@ class OrderItem(models.Model):
 
     def get_subtotal(self):
         return self.price * self.quantity
-
