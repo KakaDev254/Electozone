@@ -6,8 +6,11 @@
     <h4 class="text-center mb-4" style="color: #5f8670">
       <i class="bx bx-mobile"></i> Pay with M-Pesa
     </h4>
+
     <form id="mpesaForm">
       {% csrf_token %}
+      <input type="hidden" name="order_id" value="{{ order.id }}" />
+
       <div class="mb-3">
         <label for="phone" class="form-label">Safaricom Number</label>
         <input
@@ -15,20 +18,23 @@
           class="form-control"
           id="phoneInput"
           name="phone"
+          value="{{ phone }}"
           placeholder="e.g. 0722123456"
           required
         />
       </div>
+
       <div class="mb-3">
         <label for="amount" class="form-label">Amount</label>
         <input
           type="number"
           class="form-control"
           name="amount"
-          value="100"
-          required
+          value="{{ amount|floatformat:0 }}"
+          readonly
         />
       </div>
+
       <button type="submit" class="btn btn-pay w-100">Pay with M-Pesa</button>
 
       <div id="loader" class="text-center mt-3" style="display: none">
@@ -72,8 +78,7 @@
       .then((res) => res.json())
       .then((data) => {
         if (data.ResponseCode === "0") {
-          const checkoutID = data.CheckoutRequestID;
-          pollPaymentStatus(checkoutID); // Start polling
+          pollPaymentStatus(data.CheckoutRequestID);
         } else {
           loader.style.display = "none";
           result.textContent =
@@ -93,19 +98,18 @@
     const result = document.getElementById("resultMessage");
 
     let attempts = 0;
-    const maxAttempts = 20; // max 20 polling attempts to avoid infinite looping
+    const maxAttempts = 20;
     const interval = setInterval(() => {
       fetch(`/mpesa/payment-status/?checkout_id=${checkoutID}`)
         .then((res) => res.json())
         .then((data) => {
-          // If payment is no longer pending, stop polling and display result
           if (data.status !== "pending") {
-            clearInterval(interval); // Stop polling
-            loader.style.display = "none"; // Hide loader
-            result.textContent = data.message; // Display result message
+            clearInterval(interval);
+            loader.style.display = "none";
+            result.textContent = data.message;
             result.className = data.success
               ? "text-success text-center"
-              : "text-danger text-center"; // Update result style (success or failure)
+              : "text-danger text-center";
           }
         })
         .catch((err) => {
@@ -113,14 +117,13 @@
         });
 
       attempts++;
-      // Timeout condition if no status is received after max attempts
       if (attempts >= maxAttempts) {
-        clearInterval(interval); // Stop polling
-        loader.style.display = "none"; // Hide loader
-        result.textContent = "⌛ Timeout — payment status not received."; // Timeout message
-        result.className = "text-danger text-center"; // Timeout error style
+        clearInterval(interval);
+        loader.style.display = "none";
+        result.textContent = "⌛ Timeout — payment status not received.";
+        result.className = "text-danger text-center";
       }
-    }, 3000); // Poll every 3 seconds
+    }, 3000);
   }
 </script>
 

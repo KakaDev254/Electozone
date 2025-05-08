@@ -1,65 +1,61 @@
-/* checkout styling */
-
-:root {
-  --purple: #f72798;
-  --black: #000000;
-  --green: #1a5d1a;
-  --gold: #f57d1f;
-}
+/* ElectroZone Checkout Styles */
 
 .checkout-form {
-  background-color: #f8f9fa;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
-.btn-checkout {
-  background-color: var(--black);
-  color: white;
+.btn-success {
+  background-color: #5f8670;
   border: none;
 }
-
-.btn-checkout:hover {
-  background-color: var(--purple);
+.btn-success:hover {
+  background-color: #4b6d59;
 }
 
-/* successhtml styling start here */
-
-.success-message {
-  padding: 80px 0;
-  text-align: center;
+.list-group-item {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
 }
 
-.success-icon {
-  font-size: 60px;
-  color: var(--green);
+.list-group-item span {
+  color: #5f8670;
+  font-weight: 600;
 }
 
-.btn-home,
-.btn-orders {
-  background-color: var(--purple);
+.order-summary-header {
+  background-color: #ff9800;
   color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
-  text-decoration: none;
-  display: inline-block;
-  margin: 5px;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
+  padding: 10px;
+  border-radius: 8px 8px 0 0;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
-.btn-home:hover,
-.btn-orders:hover {
-  background-color: var(--black);
-  color: white;
+.order-summary-container {
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
 }
 
-/* Responsive: Make buttons smaller on small screens */
-@media (max-width: 576px) {
-  .btn-home,
-  .btn-orders {
-    padding: 8px 16px;
-    font-size: 14px;
+.delivery-info,
+.total-amount {
+  padding: 10px 15px;
+  border-top: 1px solid #eee;
+}
+
+.total-amount strong {
+  color: #b80000;
+  font-size: 1.2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .order-summary-container {
+    margin-top: 2rem;
   }
 }

@@ -4,12 +4,15 @@ from django.conf import settings
 
 class Product(models.Model):
     CATEGORY_CHOICES = [
-        ('smartphones', 'Smartphones'),
-        ('laptops', 'Laptops'),
-        ('accessories', 'Accessories'),
-        ('smartwatches', 'Smartwatches'),
-        ('gaming', 'Gaming'),
-        ('others', 'Others'),
+        ('female_toys', 'Female Toys'),
+        ('male_toys', 'Male Toys'),
+        ('dildos', 'Dildos'),
+        ('vibrators', 'Vibrators'),
+        ('bondage_kits', 'Bondage Kits'),
+        ('anal_toys', 'Anal_toys'),
+        ('adult_games', 'Aduilt Games'),
+        ('lubes', 'Lubes'),
+        ('condoms', 'Condoms'),
     ]
 
     name = models.CharField(max_length=100)

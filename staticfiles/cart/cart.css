@@ -1,43 +1,99 @@
-:root {
-  --purple: #f72798;
-  --black: #000000;
-  --green: #1a5d1a;
-  --gold: #f57d1f;
+h2 {
+  font-weight: 700;
+  color: #333;
+}
+
+.table-responsive {
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.03);
+}
+
+/* Table headers */
+.table thead th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Cart item rows */
+.cart-item td {
+  vertical-align: middle;
 }
 
 .cart-item img {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
+  max-width: 70px;
   border-radius: 8px;
 }
 
-.btn-remove {
-  background-color: transparent;
-  color: var(--purple);
+/* Quantity input */
+input[type="number"] {
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Buttons */
+.btn-dark,
+.btn-outline-dark {
+  transition: background 0.3s, color 0.3s;
+}
+
+.btn-dark:hover {
+  background-color: #000;
+}
+
+.btn-outline-dark:hover {
+  background-color: #343a40;
+  color: #fff;
+}
+
+.btn-danger {
+  background-color: #dc3545;
   border: none;
 }
 
-.btn-remove:hover {
-  color: var(--black);
+.btn-danger:hover {
+  background-color: #b02a37;
 }
 
-.btn-checkout {
-  background-color: var(--black);
-  color: white;
-  border: none;
+/* Coupon, delivery, and checkout sections */
+form select,
+form input[type="text"] {
+  max-width: 300px;
 }
 
-.btn-checkout:hover {
-  background-color: var(--purple);
+form .btn {
+  white-space: nowrap;
 }
 
-.btn-update {
-  background-color: var(--green);
-  color: white;
-  border: none;
+.mt-2.text-success {
+  font-size: 0.95rem;
 }
 
-.btn-update:hover {
-  background-color: var(--black);
+.border-top.pt-3 {
+  border-top: 2px solid #dee2e6 !important;
+}
+
+/* Final total highlight */
+h4 span.text-success {
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+/* Responsive spacing tweaks */
+@media (max-width: 576px) {
+  .table-responsive {
+    font-size: 0.9rem;
+  }
+
+  .cart-item img {
+    max-width: 60px;
+  }
+
+  .btn {
+    font-size: 0.85rem;
+  }
 }

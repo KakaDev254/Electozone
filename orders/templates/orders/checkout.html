@@ -1,71 +1,60 @@
 {% extends 'base.html' %} {% load static %} {% block content %}
-<link rel="stylesheet" href="{% static 'orders/orders.css' %}" />
+<link rel="stylesheet" href="{% static 'orders/checkout.css' %}" />
 
 <section class="py-5">
   <div class="container">
     <h2 class="mb-4">Checkout</h2>
-    <div class="row">
-      <!-- Order Summary First on Large Screens -->
-      <div class="col-md-6 order-md-1 order-summary-container">
-        <div class="order-summary-header">Order Summary</div>
-        <ul class="list-group mb-0">
+
+    <!-- Order Form -->
+    <form method="post" action="{% url 'checkout' %}">
+      {% csrf_token %} {{ form.as_p }}
+
+      <!-- Order Summary -->
+      <div class="mt-4">
+        <h5>Order Summary</h5>
+        <ul class="list-group mb-3">
           {% for item in items %}
-          <li
-            class="list-group-item d-flex justify-content-between align-items-center"
-          >
-            {{ item.product.name }} x {{ item.quantity }}
-            <span>Ksh {{ item.get_subtotal }}</span>
+          <li class="list-group-item d-flex justify-content-between lh-sm">
+            <div>
+              <h6 class="my-0">{{ item.product.name }}</h6>
+              <small class="text-muted">Qty: {{ item.quantity }}</small>
+            </div>
+            <span class="text-muted">Ksh {{ item.get_subtotal }}</span>
           </li>
           {% endfor %}
+
+          <li class="list-group-item d-flex justify-content-between">
+            <strong>Subtotal</strong>
+            <strong>Ksh {{ subtotal }}</strong>
+          </li>
+
+          {% if delivery_fee %}
+          <li class="list-group-item d-flex justify-content-between">
+            <strong>Delivery Fee</strong>
+            <strong>Ksh {{ delivery_fee }}</strong>
+          </li>
+          {% endif %}
+
+          <li class="list-group-item d-flex justify-content-between">
+            <strong>Total</strong>
+            <strong>Ksh {{ subtotal|add:delivery_fee }}</strong>
+          </li>
         </ul>
-        <div class="delivery-info">
-          <p>
-            <strong>Delivery Location:</strong>
-            {% if delivery_location %} {{ delivery_location.name }} (Ksh {{
-            delivery_location.fee }}) {% else %}
-            <span class="text-danger">Not selected</span>
-            {% endif %}
-          </p>
+
+        {% if delivery_message %}
+        <div class="alert alert-info">
+          <strong>Delivery Location:</strong> {{ delivery_message }}
         </div>
-        <div class="total-amount text-end">
-          <strong>Total: Ksh {{ cart.get_total|add:delivery_fee }}</strong>
-        </div>
+        {% endif %}
       </div>
 
-      <!-- Checkout Form -->
-      <div class="col-md-6 order-md-2">
-        <div class="checkout-form">
-          <form method="POST" action="{% url 'checkout' %}">
-            {% csrf_token %} {{ form.as_p }}
-
-            <h5 class="mt-4">Payment Method</h5>
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="radio"
-                id="mpesa"
-                name="payment_method"
-                value="mpesa"
-                checked
-              />
-              <label class="form-check-label" for="mpesa">M-Pesa</label>
-            </div>
-
-            <!-- Add other payment options if needed -->
-            <!-- Example:
-            <div class="form-check mt-2">
-              <input class="form-check-input" type="radio" id="credit_card" name="payment_method" value="credit_card" />
-              <label class="form-check-label" for="credit_card">Credit Card</label>
-            </div>
-            -->
-
-            <button type="submit" class="btn btn-success mt-4 px-4">
-              Proceed to Payment Page
-            </button>
-          </form>
-        </div>
+      <!-- Submit Button -->
+      <div class="d-flex justify-content-end mt-4">
+        <button type="submit" class="btn btn-success px-4 py-2">
+          Place Order
+        </button>
       </div>
-    </div>
+    </form>
   </div>
 </section>
-{% endblock content %}
+{% endblock %}

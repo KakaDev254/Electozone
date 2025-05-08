@@ -17,8 +17,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
 # Allowed hosts
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
-
+ALLOWED_HOSTS = ['*']
 # M-Pesa Configuration
 MPESA_ENVIRONMENT = os.getenv("MPESA_ENVIRONMENT")  # 'sandbox' or 'production'
 MPESA_CONSUMER_KEY = os.getenv("MPESA_CONSUMER_KEY")

@@ -1,157 +1,203 @@
-{% extends 'base.html' %} {% load static %} {% block content %}
-<link rel="stylesheet" href="{% static 'cart/cart.css' %}" />
+{% extends 'base.html' %}
+{% load static %}
 
-<section class="py-5">
-  <div class="container">
-    <h2 class="mb-4">Shopping Cart</h2>
+{% block content %}
+<style>
+    :root {
+        --purple: #f72798;
+        --black: #000000;
+        --gold: #f57d1f;
+    }
+    .text-purple { color: var(--purple); }
+    .text-gold { color: var(--gold); }
+    .btn-gold { background-color: var(--gold); color: white; }
+    .btn-outline-gold { border-color: var(--gold); color: var(--gold); }
+    .btn-outline-gold:hover { background-color: var(--gold); color: white; }
+</style>
 
-    <!-- Cart Items -->
-    <div class="table-responsive">
-      <table class="table align-middle">
-        <thead class="table-light">
-          <tr>
-            <th scope="col">Product</th>
-            <th scope="col">Name</th>
-            <th scope="col">Price</th>
-            <th scope="col">Quantity</th>
-            <th scope="col">Subtotal</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in items %}
-          <tr class="cart-item">
-            <td>
-              <img
-                src="{{ item.product.main_image.url }}"
-                alt="{{ item.product.name }}"
-                class="img-fluid"
-                style="max-width: 80px"
-              />
-            </td>
-            <td>{{ item.product.name }}</td>
-            <td>Ksh {{ item.product.price }}</td>
-            <td>
-              <form
-                method="post"
-                action="{% url 'update_cart' item.id %}"
-                class="d-flex align-items-center flex-wrap"
-              >
-                {% csrf_token %}
-                <input
-                  type="number"
-                  name="quantity"
-                  class="form-control form-control-sm me-2 mb-2"
-                  value="{{ item.quantity }}"
-                  min="1"
-                  style="width: 70px"
-                />
-                <button type="submit" class="btn btn-sm btn-dark mb-2">
-                  Update
-                </button>
-              </form>
-            </td>
-            <td>Ksh {{ item.get_subtotal }}</td>
-            <td>
-              <form method="post" action="{% url 'remove_from_cart' item.id %}">
-                {% csrf_token %}
-                <button
-                  type="submit"
-                  class="btn btn-sm btn-danger"
-                  title="Remove item"
-                >
-                  <i class="bx bx-trash"></i>
-                </button>
-              </form>
-            </td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="6" class="text-center">Your cart is empty.</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+<div class="container py-5">
+    <h1 class="mb-4 text-purple">Your Shopping Cart</h1>
 
-    <!-- Delivery Location Selection -->
-    <div class="mt-4">
-      <form method="post" action="{% url 'set_delivery_location' %}">
-        {% csrf_token %}
-        <label for="delivery_location" class="form-label fw-bold">
-          Select Delivery Location:
-        </label>
-        <div
-          class="d-flex flex-wrap align-items-center"
-          style="max-width: 100%"
-        >
-          <select
-            name="location_id"
-            id="delivery_location"
-            class="form-select form-select-sm me-2 mb-2"
-            style="max-width: 300px"
-          >
-            <option value="">-- Choose Location --</option>
-            {% for location in delivery_locations %}
-            <option value="{{ location.id }}">
-              {{ location.name }} (Ksh {{ location.fee }})
-            </option>
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
             {% endfor %}
-          </select>
-          <button type="submit" class="btn btn-sm btn-warning text-white mb-2">
-            Set Delivery
-          </button>
         </div>
-        {% if delivery_message %}
-        <div class="mt-2 text-success fw-bold">{{ delivery_message }}</div>
-        {% endif %}
-      </form>
+    {% endif %}
+
+    {% if cart.items.count %}
+    <div class="row">
+        <!-- Cart Items -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 text-black">Items in Cart</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Subtotal</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in items %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if item.product.image %}
+                                            <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}"
+                                                 class="img-thumbnail me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                                            {% else %}
+                                            <img src="{% static 'images/placeholder-product.png' %}" alt="No image"
+                                                 class="img-thumbnail me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-1">{{ item.product.name }}</h6>
+                                                <small class="text-muted">SKU: {{ item.product.sku|default:"N/A" }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-purple">Ksh {{ item.product.price }}</td>
+                                    <td>
+                                        <form method="post" action="{% url 'update_cart' item.id %}" class="d-flex">
+                                            {% csrf_token %}
+                                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1"
+                                                   class="form-control form-control-sm" style="width: 70px;">
+                                            <button type="submit" class="btn btn-sm btn-outline-gold ms-2">
+                                                <i class='bx bx-refresh'></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                    <td>Ksh {{ item.get_subtotal }}</td>
+                                    <td>
+                                        <form method="post" action="{% url 'remove_from_cart' item.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class='bx bx-trash'></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                    <i class='bx bx-arrow-back me-1'></i> Continue Shopping
+                </a>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 text-black">Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Coupon -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">Apply Coupon</h6>
+                        <form method="post" action="{% url 'apply_coupon' %}" class="d-flex">
+                            {% csrf_token %}
+                            <input type="text" name="coupon_code" placeholder="Enter coupon code"
+                                   class="form-control form-control-sm me-2">
+                            <button type="submit" class="btn btn-sm btn-gold">Apply</button>
+                        </form>
+                        {% if discount_message %}
+                        <div class="alert alert-success mt-2 py-2 d-flex justify-content-between align-items-center">
+                            <small>{{ discount_message }}</small>
+                            <form method="post" action="{% url 'remove_coupon' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger ms-3">
+                                    <i class='bx bx-x'></i> Remove
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Delivery -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">Delivery Location</h6>
+                        <form method="post" action="{% url 'set_delivery_location' %}">
+                            {% csrf_token %}
+                            <select name="location_id" class="form-select form-select-sm mb-2">
+                                <option value="">Select delivery area</option>
+                                {% for location in delivery_locations %}
+                                    <option value="{{ location.id }}"
+                                        {% if cart.delivery_location and cart.delivery_location.id == location.id %}selected{% endif %}>
+                                        {{ location.area }} - Ksh {{ location.delivery_fee }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-purple w-100" style="background-color: var(--purple); color: white;">
+                                Set Location
+                            </button>
+                        </form>
+                        {% if delivery_message %}
+                        <div class="alert alert-info mt-2 py-2">
+                            <small>{{ delivery_message }}</small>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Totals -->
+                    <div class="border-top pt-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <span>Ksh {{ base_total }}</span>
+                        </div>
+                        {% if coupon_discount %}
+                        <div class="d-flex justify-content-between mb-2 text-danger">
+                            <span>Coupon Discount:</span>
+                            <span>- Ksh {{ coupon_discount }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Delivery Fee:</span>
+                            <span>Ksh {{ delivery_fee }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between fw-bold fs-5 mt-3 pt-2 border-top text-black">
+                            <span>Total:</span>
+                            <span>Ksh {{ final_total }}</span>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <a href="{% url 'checkout' %}" class="btn btn-gold btn-lg">
+                                Proceed to Checkout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Cart Total -->
-    <div class="mt-4 border-top pt-3">
-      <p><strong>Base Total:</strong> Ksh {{ base_total }}</p>
-      {% if coupon_discount %}
-      <p><strong>Coupon Discount:</strong> -Ksh {{ coupon_discount }}</p>
-      {% endif %} {% if delivery_fee %}
-      <p><strong>Delivery Fee:</strong> Ksh {{ delivery_fee }}</p>
-      {% endif %}
-      <h4>
-        Final Total:
-        <span class="text-success">Ksh {{ final_total }}</span>
-      </h4>
+    {% else %}
+    <!-- Empty Cart -->
+    <div class="text-center py-5">
+        <img src="{% static 'images/empty-cart.svg' %}" alt="Empty Cart" class="img-fluid mb-4" style="max-height: 200px;">
+        <h3 class="mb-3 text-purple">Your cart is empty</h3>
+        <p class="text-muted mb-4">Looks like you haven't added any items yet.</p>
+        <a href="{% url 'home' %}" class="btn btn-gold px-4">
+            <i class='bx bx-store me-2'></i> Start Shopping
+        </a>
     </div>
-
-    <!-- Coupon Code Form -->
-    <div class="mt-4">
-      <form
-        method="post"
-        action="{% url 'apply_coupon' %}"
-        class="d-flex flex-wrap align-items-center"
-      >
-        {% csrf_token %}
-        <input
-          type="text"
-          name="coupon_code"
-          class="form-control form-control-sm me-2 mb-2"
-          placeholder="Enter Coupon Code"
-          style="max-width: 300px"
-        />
-        <button type="submit" class="btn btn-sm btn-outline-dark mb-2">
-          Apply Coupon
-        </button>
-      </form>
-      {% if discount_message %}
-      <div class="mt-2 fw-bold">{{ discount_message }}</div>
-      {% endif %}
-    </div>
-
-    <!-- Proceed to Checkout -->
-    <div class="d-flex justify-content-end mt-4">
-      <a href="{% url 'checkout' %}" class="btn btn-sm btn-success px-4 py-2">
-        Proceed to Checkout
-      </a>
-    </div>
-  </div>
-</section>
+    {% endif %}
+</div>
 {% endblock %}

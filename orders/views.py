@@ -7,77 +7,74 @@ from django.db import transaction
 from django.core.exceptions import PermissionDenied
 from .forms import OrderForm
 from .models import Order, OrderItem
+from coupons.models import Coupon
 from cart.models import Cart
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-@login_required
-def checkout(request):
+def checkout_view(request):
     try:
         cart = Cart.objects.get(user=request.user)
+        items = cart.items.all()
     except Cart.DoesNotExist:
-        messages.error(request, "Your cart is empty.")
-        return redirect('cart')
+        cart = None
+        items = []
 
-    items = cart.items.all()
-
-    if not items.exists():
-        messages.error(request, "Your cart is empty.")
-        return redirect('cart')
-
-    # Get delivery fee from session
-    delivery_fee = request.session.get('delivery_fee', 0)
+    delivery_fee = request.session.get("delivery_fee", 0)
+    delivery_message = request.session.get("delivery_message", "")
 
     if request.method == 'POST':
         form = OrderForm(request.POST)
+
+        if not cart or not items:
+            messages.error(request, "Your cart is empty.")
+            return redirect('cart_view')
+
         if form.is_valid():
-            try:
-                with transaction.atomic():
-                    order = form.save(commit=False)
-                    order.user = request.user
-                    order.status = Order.PENDING
-                    order.save()
+            # Save the order
+            order = form.save(commit=False)
+            order.user = request.user
+            order.status = Order.PENDING
+            order.delivery_fee = delivery_fee or 0
+            order.delivery_message = delivery_message or ""
+            order.save()
 
-                    # Create OrderItems from the cart
-                    for item in items:
-                        OrderItem.objects.create(
-                            order=order,
-                            product=item.product,
-                            quantity=item.quantity,
-                            price=item.product.price
-                        )
+            # Create order items
+            for item in items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity,
+                    price=item.product.price
+                )
 
-                    # Clear the cart
-                    cart.items.all().delete()
+            # Update coupon usage if applied
+            if cart.coupon:
+                cart.coupon.used_count += 1
+                cart.coupon.save()
 
-                    # Add delivery fee to the total amount of the order
-                    order.total_amount = order.get_total() + delivery_fee
-                    order.save()
+            # Clear cart after order is placed
+            cart.items.all().delete()
+            cart.coupon = None
+            cart.save()
 
-                    # Redirect to payment page
-                    return redirect('payment_page', order_id=order.id)
-
-            except Exception as e:
-                logger.error(f"Checkout failed: {e}")
-                messages.error(request, "An error occurred during checkout.")
-                return redirect('cart')
+            return redirect('payment_page', order_id=order.id)
     else:
         form = OrderForm()
 
+    subtotal = sum(item.get_subtotal() for item in items)
+
     return render(request, 'orders/checkout.html', {
         'form': form,
-        'items': items,
         'cart': cart,
+        'items': items,
         'delivery_fee': delivery_fee,
+        'delivery_message': delivery_message,
+        'subtotal': subtotal,
     })
 
-
-@login_required
-def payment_page(request, order_id):
-    order = get_object_or_404(Order, id=order_id, user=request.user)
-    return render(request, 'orders/payment.html', {'order': order})
 
 
 @login_required
