@@ -6,13 +6,13 @@ from .models import CustomUser
 
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-    list_display = ('email', 'full_name', 'phone_number', 'address', 'city', 'postal_code', 'is_staff', 'is_active')
+    list_display = ('email', 'first_name', 'second_name', 'phone_number', 'address', 'city', 'postal_code', 'is_staff', 'is_active')
     list_filter = ('is_staff', 'is_active')
     
     # Display fields in the form when editing a user
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal Info', {'fields': ('full_name', 'phone_number', 'address', 'city', 'postal_code')}),
+        ('Personal Info', {'fields': ('first_name', 'second_name', 'phone_number', 'address', 'city', 'postal_code')}),
         ('Permissions', {'fields': ('is_staff', 'is_active', 'is_superuser', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
@@ -21,11 +21,11 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'full_name', 'phone_number', 'address', 'city', 'postal_code', 'password1', 'password2', 'is_staff', 'is_active'),
+            'fields': ('email', 'first_name', 'second_name', 'phone_number', 'address', 'city', 'postal_code', 'password1', 'password2', 'is_staff', 'is_active'),
         }),
     )
     
-    search_fields = ('email', 'full_name')
+    search_fields = ('email', 'first_name', 'second_name',)
     ordering = ('email',)
 
 admin.site.register(CustomUser, CustomUserAdmin)

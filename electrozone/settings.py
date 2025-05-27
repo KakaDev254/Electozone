@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'orders',
     'mpesa',
     'coupons',
+    'chatbot',
     'widget_tweaks',
+    
 ]
 
 MIDDLEWARE = [

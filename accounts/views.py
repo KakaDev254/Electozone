@@ -39,7 +39,8 @@ def login_view(request):
 
 def register_view(request):
     if request.method == 'POST':
-        full_name = request.POST['full_name']
+        first_name = request.POST['first_name']
+        second_name = request.POST['second_name']
         email = request.POST['email']
         password = request.POST['password']
         confirm_password = request.POST['confirm_password']
@@ -52,7 +53,12 @@ def register_view(request):
             messages.error(request, "Email already in use.")
             return redirect('register')
 
-        user = User.objects.create_user(email=email, password=password, full_name=full_name)
+        user = User.objects.create_user(
+            email=email,
+            password=password,
+            first_name=first_name,
+            second_name=second_name  # Assuming your custom user model includes this field
+        )
         messages.success(request, "Account created successfully. You can now log in.")
         return redirect('login')
 

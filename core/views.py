@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from .models import Product
 from django.core.paginator import Paginator
@@ -58,14 +58,15 @@ def products_list(request):
 
 
 def product_detail(request, pk):
-    product = Product.objects.get(id=pk)
-  
+    product = get_object_or_404(Product, pk=pk)
+    related_products = Product.objects.filter(
+        category=product.category
+    ).exclude(pk=product.pk)[:4]  # Show up to 4 related products
 
-    context = {
+    return render(request, 'core/product_detail.html', {
         'product': product,
-    
-    }
-    return render(request, 'core/product_detail.html', context)
+        'related_products': related_products,
+    })
 
 def product_search(request):
     query = request.GET.get('q', '')  # Search term for product name or category

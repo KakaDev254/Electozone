@@ -10,25 +10,24 @@
     margin-top: 60px;
     margin-bottom: 60px;
   }
-  
+
   .form-container h3 {
     color: #5f8670;
     font-weight: bold;
   }
-  
+
   .form-label {
     color: #5f8670;
     font-weight: 500;
   }
-  
+
   .form-control {
     border: 1px solid #ccc;
     padding: 10px;
     border-radius: 5px;
     font-size: 14px;
   }
-  
-  /* Black Button */
+
   .form-container button[type="submit"] {
     background-color: #000000;
     color: #ffffff;
@@ -40,28 +39,26 @@
     font-size: 15px;
     transition: background-color 0.3s ease;
   }
-  
+
   .form-container button[type="submit"]:hover {
     background-color: #333333;
   }
-  
-  /* Link below the form */
+
   .form-container p {
     margin-top: 20px;
     font-size: 14px;
   }
-  
+
   .form-container a {
     color: #5f8670;
     text-decoration: none;
     font-weight: 500;
   }
-  
+
   .form-container a:hover {
     text-decoration: underline;
   }
-  
-  /* Responsive tweaks */
+
   @media (max-width: 576px) {
     .form-container {
       padding: 20px;
@@ -69,6 +66,7 @@
     }
   }
 </style>
+
 <div class="container mt-5">
   <div
     class="form-container mx-auto shadow p-4 rounded"
@@ -79,22 +77,29 @@
       {% csrf_token %}
 
       <div class="form-group mb-3">
-        <label for="full_name" class="form-label" style="color: #5f8670"
-          >Full Name</label
-        >
+        <label for="first_name" class="form-label">First Name</label>
         <input
           type="text"
-          id="full_name"
-          name="full_name"
+          id="first_name"
+          name="first_name"
           class="form-control"
           required
         />
       </div>
 
       <div class="form-group mb-3">
-        <label for="email" class="form-label" style="color: #5f8670"
-          >Email</label
-        >
+        <label for="second_name" class="form-label">Second Name</label>
+        <input
+          type="text"
+          id="second_name"
+          name="second_name"
+          class="form-control"
+          required
+        />
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="email" class="form-label">Email</label>
         <input
           type="email"
           id="email"
@@ -105,9 +110,7 @@
       </div>
 
       <div class="form-group mb-3">
-        <label for="password" class="form-label" style="color: #5f8670"
-          >Password</label
-        >
+        <label for="password" class="form-label">Password</label>
         <input
           type="password"
           id="password"
@@ -118,7 +121,7 @@
       </div>
 
       <div class="form-group mb-4">
-        <label for="confirm_password" class="form-label" style="color: #5f8670"
+        <label for="confirm_password" class="form-label"
           >Confirm Password</label
         >
         <input
@@ -147,7 +150,7 @@
 
     <p class="mt-3 text-center">
       Already have an account?
-      <a href="{% url 'login' %}" style="color: #5f8670">Login</a>
+      <a href="{% url 'login' %}">Login</a>
     </p>
   </div>
 </div>

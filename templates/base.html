@@ -59,8 +59,9 @@
             </span>
           </a>
 
-          <!-- User Icon -->
+          <!-- User Greeting + Profile Icon -->
           {% if user.is_authenticated %}
+          <span class="text-white me-2"> Hi {{ user.first_name }} </span>
           <a
             href="{% url 'profile' %}"
             class="text-white me-3"
@@ -92,10 +93,16 @@
             </span>
           </a>
 
-          <!-- Profile Icon -->
+          <!-- Profile Icon & Greeting -->
           {% if user.is_authenticated %}
-          <a href="{% url 'profile' %}" class="text-white">
-            <i class="bx bx-user-circle fs-4"></i>
+          <a
+            href="{% url 'profile' %}"
+            class="text-white d-flex align-items-center"
+          >
+            <i class="bx bx-user-circle fs-4 me-1"></i>
+            <span class="d-inline d-lg-none small"
+              >Hi {{ user.first_name }}</span
+            >
           </a>
           {% endif %}
 
