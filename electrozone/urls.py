@@ -10,8 +10,8 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')), 
     path('cart/', include('cart.urls')),
     path('orders/', include('orders.urls')),
-    path('mpesa/', include('mpesa.urls')),
-    path('chatbot/', include('chatbot.urls')),
+    path('pesapal/', include('payments.urls')),
+   
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

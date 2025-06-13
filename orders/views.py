@@ -8,13 +8,14 @@ from decimal import Decimal
 from django.core.exceptions import PermissionDenied
 from .forms import OrderForm
 from .models import Order, OrderItem
+from .utils import create_pesapal_order_url
 from coupons.models import Coupon
 from cart.models import Cart
 import logging
 
 logger = logging.getLogger(__name__)
 
-@login_required(login_url='login') 
+@login_required(login_url='login')
 def checkout_view(request):
     try:
         cart = Cart.objects.get(user=request.user)
@@ -37,11 +38,10 @@ def checkout_view(request):
             coupon_discount = Decimal(cart.coupon.discount_value)
             discount_message = f'Coupon "{cart.coupon.code}" applied! Discount: Ksh {coupon_discount}'
 
-    # Base total includes delivery
     base_total = cart.get_total() if cart else Decimal('0')
     items_total = sum(item.get_subtotal() for item in items)
     total_after_discount = max(base_total - coupon_discount, Decimal('0'))
-    final_total = total_after_discount  # already includes delivery
+    final_total = total_after_discount + delivery_fee  # Include delivery fee in final total
 
     if request.method == 'POST':
         form = OrderForm(request.POST)
@@ -51,32 +51,39 @@ def checkout_view(request):
             return redirect('view_cart')
 
         if form.is_valid():
-            order = form.save(commit=False)
-            order.user = request.user
-            order.status = Order.PENDING
-            order.delivery_fee = delivery_fee
-            order.delivery_message = delivery_message
-            order.coupon = cart.coupon if cart and cart.coupon else None
-            order.total_amount = final_total
-            order.save()
+            with transaction.atomic():
+                order = form.save(commit=False)
+                order.user = request.user
+                order.status = Order.PENDING
+                order.delivery_fee = delivery_fee
+                order.delivery_message = delivery_message
+                order.coupon = cart.coupon if cart and cart.coupon else None
+                order.total_amount = final_total
+                order.save()
 
-            for item in items:
-                OrderItem.objects.create(
-                    order=order,
-                    product=item.product,
-                    quantity=item.quantity,
-                    price=item.product.price
-                )
+                for item in items:
+                    OrderItem.objects.create(
+                        order=order,
+                        product=item.product,
+                        quantity=item.quantity,
+                        price=item.product.price
+                    )
 
-            if cart.coupon:
-                cart.coupon.used_count += 1
-                cart.coupon.save()
+                if cart.coupon:
+                    cart.coupon.used_count += 1
+                    cart.coupon.save()
 
-            cart.items.all().delete()
-            cart.coupon = None
-            cart.save()
+                cart.items.all().delete()
+                cart.coupon = None
+                cart.save()
 
-            return redirect('payment_page', order_id=order.id)
+                try:
+                    pesapal_url = create_pesapal_order_url(order, request.user)
+                    return redirect(pesapal_url)
+                except Exception as e:
+                    logger.error(f"PesaPal Error: {e}")
+                    messages.error(request, "Failed to initiate payment. Please try again.")
+                    return redirect('view_cart')
     else:
         form = OrderForm()
 
@@ -93,8 +100,6 @@ def checkout_view(request):
         'total_after_discount': total_after_discount,
         'final_total': final_total,
     })
-
-
 
 @login_required
 def order_success(request, order_id):
@@ -125,13 +130,12 @@ def order_history(request):
 
 @login_required
 def change_order_status(request, order_id, status):
-    """Admin or user-triggered order status change."""
+    """Admin or user-triggered order status change with controlled transitions."""
     if request.user.is_staff:
         order = get_object_or_404(Order, id=order_id)
     else:
         order = get_object_or_404(Order, id=order_id, user=request.user)
 
-    # Valid status transitions
     STATUS_TRANSITIONS = {
         Order.PAID: [Order.PENDING],
         Order.PROCESSING: [Order.PAID],
@@ -142,6 +146,13 @@ def change_order_status(request, order_id, status):
         Order.REFUNDED: [Order.PAID],
         Order.FAILED: [Order.PENDING],
     }
+
+    if not request.user.is_staff:
+        allowed_user_transitions = {
+            Order.CANCELLED: [Order.PENDING, Order.PROCESSING],
+        }
+        if status not in allowed_user_transitions or order.status not in allowed_user_transitions[status]:
+            raise PermissionDenied("You are not allowed to change the status.")
 
     if status in STATUS_TRANSITIONS and order.status in STATUS_TRANSITIONS[status]:
         try:
