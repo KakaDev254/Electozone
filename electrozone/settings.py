@@ -29,8 +29,7 @@ ALLOWED_HOSTS = [
     "electozone.onrender.com",
 ]
 
-# Allowed hosts
-ALLOWED_HOSTS = ['*']
+
 
 PESAPAL_CONSUMER_KEY = os.getenv("PESAPAL_CONSUMER_KEY")
 PESAPAL_CONSUMER_SECRET = os.getenv("PESAPAL_CONSUMER_SECRET")
