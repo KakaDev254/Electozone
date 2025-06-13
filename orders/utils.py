@@ -10,16 +10,14 @@ logger = logging.getLogger(__name__)
 # === 1. Get Production Token ===
 def get_pesapal_token():
     url = "https://pay.pesapal.com/v3/api/Auth/RequestToken"
-    try:
-        response = requests.get(
-            url,
-            auth=(settings.PESAPAL_CONSUMER_KEY, settings.PESAPAL_CONSUMER_SECRET)
-        )
-        response.raise_for_status()
-        return response.json()["token"]
-    except requests.RequestException as e:
-        logger.error(f"PesaPal token fetch failed: {e}")
-        return None
+    response = requests.get(
+        url,
+        auth=(settings.PESAPAL_CONSUMER_KEY, settings.PESAPAL_CONSUMER_SECRET)
+    )
+    print("Status code:", response.status_code)
+    print("Response text:", response.text)
+    response.raise_for_status()
+    return response.json()["token"]
 
 # === 2. Create Payment Request ===
 def create_pesapal_order_url(order, user):
