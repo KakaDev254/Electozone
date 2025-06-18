@@ -83,27 +83,3 @@ def fetch_transaction_status(tracking_id, token):
         logger.error(f"Error fetching transaction status for {tracking_id}: {e}")
         return None
 
-# === 4. Get Registered IPN URLs ===
-def get_notification_ids():
-    token = get_pesapal_token()
-    if not token:
-        logger.error("Failed to retrieve PesaPal token for IPN fetch")
-        return []
-
-    url = "https://pay.pesapal.com/v3/api/URLSetup/GetIpnList"
-    headers = {
-        "Authorization": f"Bearer {token}",
-    }
-
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-
-        ipns = response.json()
-        for ipn in ipns:
-            logger.info(f"Registered IPN: {ipn['url']} => ID: {ipn['id']}")
-        return ipns
-
-    except requests.RequestException as e:
-        logger.error(f"Error fetching IPN list: {e}")
-        return []
