@@ -8,13 +8,14 @@ from decimal import Decimal
 from django.core.exceptions import PermissionDenied
 from .forms import OrderForm
 from .models import Order, OrderItem
-from .utils import create_pesapal_order_url
+
 from coupons.models import Coupon
 from cart.models import Cart
 import logging
 
 logger = logging.getLogger(__name__)
 
+@login_required(login_url='login')
 @login_required(login_url='login')
 def checkout_view(request):
     try:
@@ -41,7 +42,7 @@ def checkout_view(request):
     base_total = cart.get_total() if cart else Decimal('0')
     items_total = sum(item.get_subtotal() for item in items)
     total_after_discount = max(base_total - coupon_discount, Decimal('0'))
-    final_total = total_after_discount + delivery_fee  # Include delivery fee in final total
+    final_total = total_after_discount + delivery_fee
 
     if request.method == 'POST':
         form = OrderForm(request.POST)
@@ -77,13 +78,8 @@ def checkout_view(request):
                 cart.coupon = None
                 cart.save()
 
-                try:
-                    pesapal_url = create_pesapal_order_url(order, request.user)
-                    return redirect(pesapal_url)
-                except Exception as e:
-                    logger.error(f"PesaPal Error: {e}")
-                    messages.error(request, "Failed to initiate payment. Please try again.")
-                    return redirect('view_cart')
+                messages.success(request, "Order placed successfully!")
+                return redirect('order_success', order_id=order.id)
     else:
         form = OrderForm()
 
@@ -100,6 +96,7 @@ def checkout_view(request):
         'total_after_discount': total_after_discount,
         'final_total': final_total,
     })
+
 
 @login_required
 def order_success(request, order_id):

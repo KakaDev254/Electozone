@@ -17,16 +17,16 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # Debug mode (use 'True' or 'False' as string in .env)
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://eb08-41-90-172-32.ngrok-free.app",
-    "https://electozone.onrender.com",
-]
+
 
 # Also allow it in ALLOWED_HOSTS
 ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost",
-    "electozone.onrender.com",
+    '127.0.0.1',
+    'localhost',
+    '213e-102-0-6-214.ngrok-free.app',  
+]
+CSRF_TRUSTED_ORIGINS = [
+    'https://213e-102-0-6-214.ngrok-free.app',
 ]
 
 
