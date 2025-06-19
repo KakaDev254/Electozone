@@ -24,6 +24,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     '213e-102-0-6-214.ngrok-free.app',  
+    'https://electozone.onrender.com/'
 ]
 CSRF_TRUSTED_ORIGINS = [
     'https://213e-102-0-6-214.ngrok-free.app',
