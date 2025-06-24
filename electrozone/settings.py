@@ -3,6 +3,8 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import cloudinary
+import cloudinary_storage
 
 # Load environment variables from .env
 load_dotenv()
@@ -17,17 +19,24 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # Debug mode (use 'True' or 'False' as string in .env)
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
+}
 
 
 # Also allow it in ALLOWED_HOSTS
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
-    '213e-102-0-6-214.ngrok-free.app',  
+    '96b0-102-0-6-214.ngrok-free.app',  
     'electozone.onrender.com'
 ]
 CSRF_TRUSTED_ORIGINS = [
-    'https://213e-102-0-6-214.ngrok-free.app',
+    'https://96b0-102-0-6-214.ngrok-free.app',
 ]
 
 
@@ -52,6 +61,8 @@ INSTALLED_APPS = [
     'coupons',
     'payments',
     'widget_tweaks',
+    'cloudinary',
+    'cloudinary_storage',
     
 ]
 
@@ -142,8 +153,8 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

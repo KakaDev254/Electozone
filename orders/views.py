@@ -1,5 +1,3 @@
-# orders/views.py
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -15,7 +13,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-@login_required(login_url='login')
 @login_required(login_url='login')
 def checkout_view(request):
     try:
@@ -78,8 +75,8 @@ def checkout_view(request):
                 cart.coupon = None
                 cart.save()
 
-                messages.success(request, "Order placed successfully!")
-                return redirect('order_success', order_id=order.id)
+                # 👇 Redirect to Pesapal payment
+                return redirect('pesapal_pay', order_number=order.order_number)
     else:
         form = OrderForm()
 

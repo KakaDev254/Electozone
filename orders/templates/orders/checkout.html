@@ -26,14 +26,15 @@
             </li>
             {% endif %}
             <li class="list-group-item d-flex justify-content-between">
-              <span>Total:</span>
+              <span><strong>Total:</strong></span>
               <strong>Ksh {{ final_total }}</strong>
             </li>
           </ul>
+
           {% if discount_message %}
-          <div class="alert alert-success">{{ discount_message }}</div>
+          <div class="alert alert-success small">{{ discount_message }}</div>
           {% endif %} {% if delivery_message %}
-          <div class="alert alert-info">{{ delivery_message }}</div>
+          <div class="alert alert-info small">{{ delivery_message }}</div>
           {% endif %}
         </div>
       </div>
@@ -44,13 +45,18 @@
       <h2 class="mb-4">Billing Details</h2>
       <form method="post" novalidate>
         {% csrf_token %} {{ form.as_p }}
+
         <button
           type="submit"
           class="btn w-100 mt-3"
           style="background-color: rgb(5, 2, 11); color: white"
         >
-          Place Order
+          Place Order & Pay with PesaPal
         </button>
+
+        <div class="text-muted text-center mt-2 small">
+          You will be redirected to PesaPal to complete your payment securely.
+        </div>
       </form>
     </div>
   </div>
