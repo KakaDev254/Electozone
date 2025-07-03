@@ -14,12 +14,12 @@
       >
         All
       </a>
-      {% for key, label in categories.items %}
+      {% for category in categories %}
       <a
-        href="{% url 'products' %}?category={{ key }}"
-        class="btn btn-outline-dark m-1 {% if selected_category == key %}active{% endif %} btn-sm btn-responsive"
+        href="{% url 'products' %}?category={{ category.slug }}"
+        class="btn btn-outline-dark m-1 {% if selected_category == category.slug %}active{% endif %} btn-sm btn-responsive"
       >
-        {{ label }}
+        {{ category.name }}
       </a>
       {% endfor %}
     </div>
@@ -39,7 +39,16 @@
               alt="{{ product.name }}"
             />
             <div class="card-body">
-              <h5 class="card-title">{{ product.name }}</h5>
+              <h5
+                class="card-title"
+                style="
+                  background-color: #ffc0cb;
+                  padding: 4px;
+                  border-radius: 5px;
+                "
+              >
+                {{ product.name }}
+              </h5>
               <p class="card-text">Ksh {{ product.price|floatformat:0 }}</p>
             </div>
           </div>

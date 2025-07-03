@@ -1,7 +1,5 @@
 from django.contrib import admin
-from .models import Product
+from .models import Product, Category
 
-@admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'category', 'is_featured', 'is_new')
-    list_filter = ('category', 'is_featured', 'is_new')
+admin.site.register(Product)
+admin.site.register(Category)

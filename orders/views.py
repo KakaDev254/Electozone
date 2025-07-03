@@ -39,7 +39,7 @@ def checkout_view(request):
     base_total = cart.get_total() if cart else Decimal('0')
     items_total = sum(item.get_subtotal() for item in items)
     total_after_discount = max(base_total - coupon_discount, Decimal('0'))
-    final_total = total_after_discount + delivery_fee
+    final_total = total_after_discount
 
     if request.method == 'POST':
         form = OrderForm(request.POST)

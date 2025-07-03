@@ -6,15 +6,15 @@
   <div class="container">
     <a
       href="?category=all"
-      class="category-link {% if selected_category == 'all' %}active{% endif %}"
+      class="category-link {% if selected_category == 'all' or not selected_category %}active{% endif %}"
       >All</a
     >
-    {% for category, category_name in categories.items %}
+    {% for category in categories %}
     <a
-      href="?category={{ category }}"
-      class="category-link {% if category == selected_category %}active{% endif %}"
+      href="?category={{ category.slug }}"
+      class="category-link {% if selected_category == category.slug %}active{% endif %}"
     >
-      {{ category_name }}
+      {{ category.name }}
     </a>
     {% endfor %}
   </div>
@@ -28,8 +28,9 @@
     <a
       href="{% url 'products' %}"
       class="btn btn-shop mt-3 px-4 py-2 text-white"
-      >Shop Now</a
     >
+      Shop Now
+    </a>
   </div>
 </section>
 
@@ -41,7 +42,7 @@
     </h2>
     <div class="row g-4 justify-content-center">
       {% for product in featured_products %}
-      <div>
+      <div class="col-sm-6 col-md-4 col-lg-3">
         <a
           href="{% url 'product_detail' product.pk %}"
           class="text-decoration-none text-dark"
@@ -53,7 +54,8 @@
               alt="{{ product.name }}"
             />
             <div class="card-body">
-              <h5 class="card-title">{{ product.name }}</h5>
+              <h5 class="card-title bg-pink-black-text">{{ product.name }}</h5>
+
               <p class="card-text">Ksh {{ product.price }}</p>
             </div>
           </div>
@@ -64,7 +66,7 @@
   </div>
 </section>
 
-<!-- New Arrivals (Swipeable) -->
+<!-- New Arrivals -->
 <section class="new-arrivals py-5">
   <div class="container">
     <h2 class="text-center mb-4" style="color: var(--purple)">New Arrivals</h2>
@@ -83,7 +85,10 @@
                 alt="{{ product.name }}"
               />
               <div class="card-body">
-                <h5 class="card-title">{{ product.name }}</h5>
+                <h5 class="card-title bg-pink-black-text">
+                  {{ product.name }}
+                </h5>
+
                 <p class="card-text">Ksh {{ product.price }}</p>
               </div>
             </div>
