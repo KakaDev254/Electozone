@@ -33,10 +33,14 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     '96b0-102-0-6-214.ngrok-free.app',  
-    'electozone.onrender.com'
+    'electozone.onrender.com',
+    'nuvana.co.ke',
+    'www.nuvana.co.ke'  # Optional but recommended if users might access with 'www'
 ]
 CSRF_TRUSTED_ORIGINS = [
     'https://96b0-102-0-6-214.ngrok-free.app',
+    "https://nuvana.co.ke",
+    "https://www.nuvana.co.ke",
 ]
 
 
