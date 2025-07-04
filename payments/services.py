@@ -1,7 +1,8 @@
 import requests
 import os
 
-PESAPAL_BASE_URL = "https://cybqa.pesapal.com/pesapalv3"
+PESAPAL_BASE_URL = "https://pay.pesapal.com/v3"
+
 
 def get_access_token():
     url = f"{PESAPAL_BASE_URL}/api/Auth/RequestToken"

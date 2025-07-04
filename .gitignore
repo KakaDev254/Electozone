@@ -1,6 +1,11 @@
-# Ignore virtual environment
+.env
 venv/
-# Ignore environment variables
-**/.env
-# Ignore __pycache__ files
+ENV/
+env/
+*.env
+
+# VS Code
+.vscode/
+
+# Python
 __pycache__/
