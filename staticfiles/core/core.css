@@ -24,7 +24,7 @@
 
 .hero {
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url("/static/core/images/vibehaus-hero.jpg") center/cover;
+    url("/static/core/images/perfume hero.jpg") center/cover;
   color: #fff;
   padding: 100px 20px;
   text-align: center;
@@ -101,6 +101,13 @@
   .featured-products .row > div {
     flex: 0 0 50%;
     max-width: 50%;
+  }
+  .hero h1 {
+    font-size: 2rem;
+  }
+  .categories-bar a {
+    font-size: 14px;
+    margin: 0 4px;
   }
 }
 
@@ -245,7 +252,12 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-
+.bg-pink-black-text {
+  background-color: #f1479c; /* Pink background */
+  color: #e3d7d7; /* Black text */
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+}
 .card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
