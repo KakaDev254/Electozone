@@ -15,11 +15,11 @@ class Category(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=100)
     price = models.IntegerField()
-    main_image = models.ImageField(upload_to='products/')
-    image_1 = models.ImageField(upload_to='products/', blank=True, null=True)
-    image_2 = models.ImageField(upload_to='products/', blank=True, null=True)
-    image_3 = models.ImageField(upload_to='products/', blank=True, null=True)
-    image_4 = models.ImageField(upload_to='products/', blank=True, null=True)
+    main_image = CloudinaryField('image')
+    image_1 = CloudinaryField('image')
+    image_2 = CloudinaryField('image')
+    image_3 = CloudinaryField('image')
+    image_4 = CloudinaryField('image')
 
     spec_1 = models.CharField(max_length=255, blank=True, null=True)
     spec_2 = models.CharField(max_length=255, blank=True, null=True)
