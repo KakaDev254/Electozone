@@ -79,37 +79,47 @@ def register_view(request):
     return render(request, 'accounts/register.html')
 
 
-def send_activation_email(user, request):
-    token = default_token_generator.make_token(user)
-    uid = urlsafe_base64_encode(force_bytes(user.pk))
-    activation_link = request.build_absolute_uri(
-        f"/accounts/activate/{uid}/{token}/"
-    )
-    subject = "Activate Your Nuvana Account"
-    message = render_to_string('accounts/activation_email.html', {
-        'user': user,
-        'activation_link': activation_link
-    })
-    send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email])
-
-
 def activate_account(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
         user = User.objects.get(pk=uid)
-    except (User.DoesNotExist, ValueError, TypeError):
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
 
-    if user is not None and default_token_generator.check_token(user, token):
+    if user and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
-        messages.success(request, "Account activated successfully. Please log in.")
+        messages.success(request, "Account activated successfully. You can now log in.")
         return redirect('login')
     else:
-        return HttpResponse("Activation link is invalid or has expired.")
+        messages.error(request, "Activation link is invalid!")
+        return redirect('login')
 
 
 def logout_view(request):
     logout(request)
     messages.success(request, "You have been logged out.")
     return redirect('login')
+
+
+# ✅ Send activation email utility
+def send_activation_email(user, request):
+    subject = "Activate Your Account"
+    token = default_token_generator.make_token(user)
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    activation_link = request.build_absolute_uri(
+        f"/accounts/activate/{uid}/{token}/"
+    )
+
+    message = render_to_string('accounts/activation_email.html', {
+        'user': user,
+        'activation_link': activation_link,
+    })
+
+    send_mail(
+        subject,
+        message,
+        settings.DEFAULT_FROM_EMAIL,
+        [user.email],
+        fail_silently=False,
+    )
