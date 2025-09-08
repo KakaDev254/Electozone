@@ -1,7 +1,6 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block content %}
+{% extends 'base.html' %} {% load static %} {% block content %}
 <link rel="stylesheet" href="{% static 'core/core.css' %}" />
+
 <section class="py-5">
   <div class="container">
     <div class="row g-5">
@@ -22,24 +21,21 @@
             class="img-thumbnail gallery-thumb"
             onclick="changeImage(this.src)"
           />
-          {% endif %}
-          {% if product.image_2 %}
+          {% endif %} {% if product.image_2 %}
           <img
             src="{{ product.image_2.url }}"
             alt="Image 2"
             class="img-thumbnail gallery-thumb"
             onclick="changeImage(this.src)"
           />
-          {% endif %}
-          {% if product.image_3 %}
+          {% endif %} {% if product.image_3 %}
           <img
             src="{{ product.image_3.url }}"
             alt="Image 3"
             class="img-thumbnail gallery-thumb"
             onclick="changeImage(this.src)"
           />
-          {% endif %}
-          {% if product.image_4 %}
+          {% endif %} {% if product.image_4 %}
           <img
             src="{{ product.image_4.url }}"
             alt="Image 4"
@@ -54,18 +50,27 @@
       <div class="col-md-6">
         <h2>{{ product.name }}</h2>
         <p class="price">Ksh {{ product.price }}</p>
+
+        <!-- ⭐ Rating -->
+        <div class="rating text-warning mb-2">
+          <i class="bx bx-star"></i>
+          <i class="bx bx-star"></i>
+          <i class="bx bx-star"></i>
+          <i class="bx bx-star"></i>
+          <i class="bx bx-star"></i>
+        </div>
+        <small class="text-muted d-block mb-3">No ratings yet</small>
+
         <p>{{ product.description }}</p>
+
         <ul class="list-group list-group-flush mb-3">
           {% if product.spec_1 %}
           <li class="list-group-item">{{ product.spec_1 }}</li>
-          {% endif %}
-          {% if product.spec_2 %}
+          {% endif %} {% if product.spec_2 %}
           <li class="list-group-item">{{ product.spec_2 }}</li>
-          {% endif %}
-          {% if product.spec_3 %}
+          {% endif %} {% if product.spec_3 %}
           <li class="list-group-item">{{ product.spec_3 }}</li>
-          {% endif %}
-          {% if product.spec_4 %}
+          {% endif %} {% if product.spec_4 %}
           <li class="list-group-item">{{ product.spec_4 }}</li>
           {% endif %}
         </ul>
@@ -80,9 +85,13 @@
       </div>
     </div>
 
+    <!-- 🔥 Creative Separator Banner -->
+    <div class="separator-banner my-5 text-center">
+      <span>✨ You May Also Like!! ✨</span>
+    </div>
+
     <!-- Related Products Section -->
-    <hr class="my-5" />
-    <h4 class="mb-4" style="color: #5f8670;">You may also like</h4>
+    <h4 class="mb-4" style="color: #5f8670">You may also like</h4>
     <div class="row">
       {% for item in related_products %}
       <div class="col-md-3 col-6 mb-4">
@@ -95,7 +104,21 @@
           <div class="card-body text-center">
             <h6 class="card-title">{{ item.name }}</h6>
             <p class="text-muted">Ksh {{ item.price }}</p>
-            <a href="{% url 'product_detail' item.pk %}" class="btn btn-sm btn-outline-dark">
+
+            <!-- ⭐ Rating -->
+            <div class="rating text-warning">
+              <i class="bx bx-star"></i>
+              <i class="bx bx-star"></i>
+              <i class="bx bx-star"></i>
+              <i class="bx bx-star"></i>
+              <i class="bx bx-star"></i>
+            </div>
+            <small class="text-muted d-block">No ratings yet</small>
+
+            <a
+              href="{% url 'product_detail' item.pk %}"
+              class="btn btn-sm btn-outline-dark mt-2"
+            >
               View
             </a>
           </div>

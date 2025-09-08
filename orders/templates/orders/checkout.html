@@ -1,7 +1,7 @@
 {% extends 'base.html' %} {% load static %} {% block content %}
 <div class="container my-5">
   <div class="row flex-column-reverse flex-md-row">
-    <!-- Order Summary (Left on md+ screens) -->
+    <!-- Order Summary -->
     <div class="col-md-5 mb-4 mb-md-0">
       <div class="card shadow-sm">
         <div class="card-header bg-light">
@@ -40,22 +40,36 @@
       </div>
     </div>
 
-    <!-- Checkout Form (Right on md+ screens) -->
+    <!-- Checkout Form -->
     <div class="col-md-7">
-      <h2 class="mb-4">Billing Details</h2>
+      <h2 class="mb-4">Billing & Delivery Details</h2>
       <form method="post" novalidate>
-        {% csrf_token %} {{ form.as_p }}
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            {{ form.address.label_tag }} {{ form.address }}
+          </div>
+          <div class="col-md-6 mb-3">
+            {{ form.city.label_tag }} {{ form.city }}
+          </div>
+          <div class="col-md-6 mb-3">
+            {{ form.postal_code.label_tag }} {{ form.postal_code }}
+          </div>
+          <div class="col-md-12 mb-3">
+            {{ form.phone_number.label_tag }} {{ form.phone_number }}
+          </div>
+        </div>
 
         <button
           type="submit"
           class="btn w-100 mt-3"
           style="background-color: rgb(5, 2, 11); color: white"
         >
-          Place Order & Pay with PesaPal
+          Place Order (Cash on Delivery)
         </button>
 
         <div class="text-muted text-center mt-2 small">
-          You will be redirected to PesaPal to complete your payment securely.
+          You will pay for your order when it is delivered.
         </div>
       </form>
     </div>

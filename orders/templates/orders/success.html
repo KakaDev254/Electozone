@@ -1,0 +1,11 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container my-5 text-center">
+  <h2 class="mb-3 text-success">✅ Order Placed Successfully!</h2>
+  <p>Thank you for shopping with <strong>ElectroZone</strong>.</p>
+  <p>Your order <strong>#{{ order.order_number }}</strong> has been placed.</p>
+  <p class="mt-3">
+    You will pay <strong>Ksh {{ order.get_total }}</strong> on delivery.
+  </p>
+  <a href="{% url 'home' %}" class="btn btn-dark mt-4">Continue Shopping</a>
+</div>
+{% endblock %}

@@ -35,7 +35,7 @@ ALLOWED_HOSTS = [
     '96b0-102-0-6-214.ngrok-free.app',  
     'electozone.onrender.com',
     'nuvana.co.ke',
-    'www.nuvana.co.ke'  # Optional but recommended if users might access with 'www'
+    'www.nuvana.co.ke'  
 ]
 CSRF_TRUSTED_ORIGINS = [
     'https://96b0-102-0-6-214.ngrok-free.app',
@@ -43,11 +43,6 @@ CSRF_TRUSTED_ORIGINS = [
     "https://www.nuvana.co.ke",
 ]
 
-
-PESAPAL_CONSUMER_KEY = os.getenv("PESAPAL_CONSUMER_KEY")
-PESAPAL_CONSUMER_SECRET = os.getenv("PESAPAL_CONSUMER_SECRET")
-PESAPAL_CALLBACK_URL = os.getenv("PESAPAL_CALLBACK_URL")
-PESAPAL_NOTIFICATION_ID=os.getenv("PESAPAL_NOTIFICATION_ID")
 
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
 EMAIL_HOST = os.getenv('EMAIL_HOST')
@@ -71,7 +66,7 @@ INSTALLED_APPS = [
     'cart',
     'orders',
     'coupons',
-    'payments',
+   
     'widget_tweaks',
     'cloudinary',
     'cloudinary_storage',

@@ -50,6 +50,16 @@
                 {{ product.name }}
               </h5>
               <p class="card-text">Ksh {{ product.price|floatformat:0 }}</p>
+
+              <!-- ⭐ Rating Section -->
+              <div class="rating text-warning mb-1">
+                <i class="bx bx-star"></i>
+                <i class="bx bx-star"></i>
+                <i class="bx bx-star"></i>
+                <i class="bx bx-star"></i>
+                <i class="bx bx-star"></i>
+              </div>
+              <small class="text-muted d-block">No ratings yet</small>
             </div>
           </div>
         </a>

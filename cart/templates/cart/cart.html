@@ -65,7 +65,6 @@
                                             {% endif %}
                                             <div>
                                                 <h6 class="mb-1 d-none d-sm-block">{{ item.product.name }}</h6>
-                                                
                                             </div>
                                         </div>
                                     </td>
@@ -133,47 +132,37 @@
                     <!-- Delivery -->
                     <div class="mb-4">
                         <h6 class="mb-3">Delivery Location</h6>
-                        <form method="post" action="{% url 'set_delivery_location' %}">
-                            {% csrf_token %}
-                            <select name="location_id" class="form-select form-select-sm mb-2">
-                                <option value="">Select delivery area</option>
-                                {% for location in delivery_locations %}
-                                    <option value="{{ location.id }}"
-                                        {% if cart.delivery_location and cart.delivery_location.id == location.id %}selected{% endif %}>
-                                        {{ location.area }} - Ksh {{ location.delivery_fee }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                            <button type="submit" class="btn btn-sm btn-purple w-100">
-                                Set Location
-                            </button>
-                        </form>
-                        {% if delivery_message %}
-                        <div class="alert alert-info mt-2 py-2">
-                            <small>{{ delivery_message }}</small>
-                        </div>
-                        {% endif %}
+                        <select id="delivery-location" name="location_id" class="form-select form-select-sm mb-2">
+                            <option value="">Select delivery area</option>
+                            {% for location in delivery_locations %}
+                                <option value="{{ location.id }}"
+                                    {% if cart.delivery_location and cart.delivery_location.id == location.id %}selected{% endif %}>
+                                    {{ location.area }} - Ksh {{ location.delivery_fee }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <div id="delivery-message" class="alert alert-info mt-2 py-2 d-none"></div>
                     </div>
 
                     <!-- Totals -->
-                    <div class="border-top pt-3">
+                    <div class="border-top pt-3" id="order-summary">
                         <div class="d-flex justify-content-between mb-2">
                             <span>Delivery Fee:</span>
-                            <span>Ksh {{ delivery_fee }}</span>
+                            <span id="delivery-fee">Ksh {{ delivery_fee }}</span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Subtotal:</span>
-                            <span>Ksh {{ base_total }}</span>
+                            <span id="base-total">Ksh {{ base_total }}</span>
                         </div>
                         {% if coupon_discount %}
                         <div class="d-flex justify-content-between mb-2 text-danger">
                             <span>Coupon Discount:</span>
-                            <span>- Ksh {{ coupon_discount }}</span>
+                            <span id="coupon-discount">- Ksh {{ coupon_discount }}</span>
                         </div>
                         {% endif %}
                         <div class="d-flex justify-content-between fw-bold fs-5 mt-3 pt-2 border-top text-black">
                             <span>Total:</span>
-                            <span>Ksh {{ final_total }}</span>
+                            <span id="final-total">Ksh {{ final_total }}</span>
                         </div>
                     
                         <div class="d-grid mt-4">
@@ -199,4 +188,40 @@
     </div>
     {% endif %}
 </div>
+
+<!-- AJAX Script -->
+<script>
+document.getElementById("delivery-location").addEventListener("change", function() {
+    const locationId = this.value;
+    const csrfToken = "{{ csrf_token }}";
+
+    if (!locationId) return;
+
+    fetch("{% url 'set_delivery_location' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": csrfToken,
+        },
+        body: "location_id=" + locationId
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById("delivery-message").classList.remove("d-none");
+            document.getElementById("delivery-message").innerText = data.message;
+
+            // Update numbers directly
+            document.getElementById("delivery-fee").innerText = "Ksh " + data.delivery_fee;
+            document.getElementById("base-total").innerText = "Ksh " + data.base_total;
+            document.getElementById("final-total").innerText = "Ksh " + data.final_total;
+
+            if (document.getElementById("coupon-discount")) {
+                document.getElementById("coupon-discount").innerText = "- Ksh " + data.coupon_discount;
+            }
+        }
+    })
+    .catch(error => console.error("Error:", error));
+});
+</script>
 {% endblock %}

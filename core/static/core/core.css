@@ -268,3 +268,18 @@
   background-color: #f72798;
   color: #fff;
 }
+.separator-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  background: linear-gradient(90deg, #5f8670, #820300, #ff9800);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  width: fit-content;
+  margin: 0 auto;
+}
