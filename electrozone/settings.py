@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 import cloudinary
 import cloudinary_storage
+from import_export.formats import base_formats
 
 # Load environment variables from .env
 load_dotenv()
@@ -19,6 +20,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # Debug mode (use 'True' or 'False' as string in .env)
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
+
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 CLOUDINARY_STORAGE = {
@@ -26,7 +28,17 @@ CLOUDINARY_STORAGE = {
     'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
     'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
 }
+from import_export.formats import base_formats  
 
+IMPORT_EXPORT_FORMATS = [
+    base_formats.CSV,
+    base_formats.TSV,
+    base_formats.XLS,
+    base_formats.XLSX,
+    base_formats.JSON,
+    base_formats.YAML,
+    base_formats.HTML,
+]
 
 # Also allow it in ALLOWED_HOSTS
 ALLOWED_HOSTS = [
@@ -71,6 +83,7 @@ INSTALLED_APPS = [
     'cloudinary',
     'cloudinary_storage',
     'django.contrib.sites',
+    'import_export',
     
 ]
 
@@ -119,6 +132,8 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
 
 
 # Password validation
